@@ -1,0 +1,14 @@
+<h2 class =  "page-header">Profile</h2>
+
+<div>
+	<a href = "/edit_profile" class = "btn btn-primary">Update Profile</a>
+</div>
+<img class = "profile_pic" src = ""></img>
+
+<h4 class = "profile_name">{{ first_name }} {{ last_name }}</h4>
+<h4 class = "profile_name">Username: {{ username }}</h4>
+
+<h4 class = "profile_name">Bio:</h4>
+<p>{{ bio }}</p>
+
+<script>getProfilePic("{{ profile_pic }}")</script>
