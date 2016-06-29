@@ -2,9 +2,12 @@
 <html>
 	<head>
 		<title>Social Network</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
 		<link rel="stylesheet" type="text/css" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href = "/css/style.css">
 		<link rel="stylesheet" type="text/css" href = "/css/image-picker.css">
+		
 		<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 		<script src="/js/image-picker.min.js"></script> 
 		<script src = "/js/main.js"></script>
@@ -15,7 +18,7 @@
 				<nav>
 					<ul class="nav nav-pills pull-right">
 						{{#if user}}
-							<li role="presentation"><a href="/">Profile</a></li>
+							<li role="presentation"><a href="/">My Profile</a></li>
 							<li role="presentation"><a href="/users/logout">Logout</a></li>
 						{{else}}
 							<li role="presentation"><a href="/users/login">Login</a></li>
@@ -23,7 +26,13 @@
 						{{/if}}
 					</ul>
 				</nav>
-				<h3 class="text-muted">Social Network</h3>
+				<h3 class = "websiteTitle" class="text-muted">Social Network</h3>
+				{{#if user}}
+					<form method = "post" action = "/user_result">
+						<input class = "form-control userSearchBar" placeholder = "Search By Username" name = "username" type = "text">
+						<input type = "submit" value = "Search" class = "btn btn-primary">
+					</form>
+				{{/if}}
 			</div>
 
 			<div class="row">

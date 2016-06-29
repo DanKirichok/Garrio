@@ -1,7 +1,5 @@
-<h2 class =  "page-header">
-	Your Profile
-	<a href = "/edit_profile" class = "btn btn-primary pull-right">Update Profile</a>
-</h2>
+<h2 class =  "page-header">{{ username }}'s Profile</h2>
+
 <div class = "col-md-3 organizer">
 	<div>
 		<img class = "profile_pic" src = ""></img>
@@ -23,3 +21,5 @@
 	Timeline will go here
 </div>
 
+
+<script>getProfilePic("{{ profile_pic }}")</script>
