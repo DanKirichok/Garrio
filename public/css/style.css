@@ -7,23 +7,8 @@
 	font-weight: bold;
 }
 
-form{
-	display: inline;
-}
-
 .websiteTitle{
-	display: inline;
-}
-
-.userSearchBar{
-	margin-top: 5px;
-	margin-left: 30px;
-	display: inline-block;	
-	width: 30%;
-}
-
-.header{
-	margin-top: 10px;
+	display: inline-block;
 }
 
 .organizer{
@@ -31,5 +16,8 @@ form{
 
 .name-group{
 	margin-top: 20px;
-	
+}
+
+.footer-divider{
+	margin-bottom: 60px;
 }
