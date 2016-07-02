@@ -57,6 +57,7 @@ router.get('/friends', ensureAuthenticated, function(req, res){
 				for (var newListNum = 0; newListNum < friends.length; newListNum ++){
 					for (var newListUser = 0; newListUser < friends[newListNum].length; newListUser ++){
 						if (friends[newListNum][newListUser] == user.username){
+							friendsSorted ++;
 							
 							//These numbers are based off the position of each list in the friends list
 							if (newListNum == 0){
@@ -69,14 +70,14 @@ router.get('/friends', ensureAuthenticated, function(req, res){
 						}
 					}
 					
-					/*This is to help debug problems
+					//This is to help debug problems
 					
 					console.log("friends.length: " + friends.length);
 					console.log("newListNum: " + newListNum);
 					
 					console.log("Friends sorted: " + friendsSorted);
 					console.log('');
-					*/
+					
 					
 					if (friendsSorted == totalFriends){
 						//Page is rendered with the friends list filled with appropriate info
