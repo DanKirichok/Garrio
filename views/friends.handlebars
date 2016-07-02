@@ -1,0 +1,29 @@
+{{#if amnt_pending}}
+	<h2 class =  "page-header">
+		{{ amnt_pending }} Pending Requests
+	</h2>
+	{{#each pendingFriendsList}}
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<img class = "list_pic" name = {{ this.profile_pic }}></img>
+				{{ this.username }}
+			</div>
+		</div>
+	{{/each}}
+{{/if}}
+
+<h2 class =  "page-header">
+	{{ amnt_friends }} Friends
+</h2>
+{{#each acceptedFriendsList}}
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<img class = "list_pic" name = {{ this.user.profile_pic }}></img>
+			{{ this.user.username }}
+		</div>
+	</div>
+{{/each}}
+
+<script>
+	listProfilePics()
+</script>

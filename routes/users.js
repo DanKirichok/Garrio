@@ -16,7 +16,7 @@ router.get('/login', function(req, res){
 });
 
 //Register
-router.post('/register', function(req, res){
+router.post('/register', function(req, res){	
 	var first_name = req.body.first_name;
 	var last_name = req.body.last_name;
 	var email = req.body.email;
@@ -36,36 +36,42 @@ router.post('/register', function(req, res){
 	var errors = req.validationErrors();
 	
 	var usernameExists = false;
-
+	
 	if (errors){
-		console.log(errors)
 		res.render('register', {
 			errors: errors
 		});
 	}else{
-		User.findOne({
-		'username': username,
-		'email': email}, function(err, user){
-			//This checks database and sees if user.email is in database and sends an error
-			if(user != null && user.email){
+		//Checks to see if email is taken
+		User.findOne({'email': email}, function(err, user){
+			//If user doesn't equal null that means that a user with the email already exists
+			if(user != null){
 				req.flash('error_msg', user.email + ' is already associated with an account.');
 				res.redirect('/users/register');	
 			}else{
-				//This runs if the email is not yet taken and registers the account
-				var newUser = new User({
-					first_name: first_name,
-					last_name: last_name,
-					email: email,
-					username: username,
-					password: password,
-				});
-			
-				User.createUser(newUser, function(err, user){
-					if (err) throw err;
-				});
-				
-				req.flash('success_msg', 'You are registered and can now login.');
-				res.redirect('/users/login');
+				//Checks to see if username is taken
+				User.findOne({'username': username}, function(err, user){
+					if (user != null ){
+						req.flash('error_msg', user.username + ' is taken.');
+						res.redirect('/users/register');	
+					}else{
+						//This runs if the email is not yet taken and registers the account
+						var newUser = new User({
+							first_name: first_name,
+							last_name: last_name,
+							email: email,
+							username: username,
+							password: password,
+						});
+					
+						User.createUser(newUser, function(err, user){
+							if (err) throw err;
+						});
+						
+						req.flash('success_msg', 'You are registered and can now login.');
+						res.redirect('/users/login');
+					}
+				})
 			}
 		})
 	}

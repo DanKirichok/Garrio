@@ -1,5 +1,10 @@
-<h2 class =  "page-header">{{ username }}'s Profile</h2>
-
+<h2 class =  "page-header">
+	{{ username }}'s Profile
+	<form class = "inline-form pull-right" method = "post" action = "/processing">
+		<input name = "user" id = "usernameFR" type = "hidden">
+		<button type = "submit" class = "btn btn-primary pull-right">Send Friend Request</button>
+	</form>
+</h2>
 <div class = "col-md-3 organizer">
 	<div>
 		<img class = "profile_pic" src = ""></img>
@@ -22,4 +27,7 @@
 </div>
 
 
-<script>getProfilePic("{{ profile_pic }}")</script>
+<script>
+	getProfilePic("{{ profile_pic }}");
+	sendUsernameFR("{{ username }}");
+</script>

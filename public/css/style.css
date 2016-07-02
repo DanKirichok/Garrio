@@ -1,6 +1,15 @@
+body{
+	background-color: 
+}
+
 .profile_pic{
 	height: 100px;
 	width: 100px;
+	border-radius: 50%;
+}
+
+.list_pic{
+	border-radius: 50%;
 }
 
 .profile_name{
@@ -12,6 +21,7 @@
 }
 
 .organizer{
+	padding: 20px;
 }
 
 .name-group{
@@ -19,5 +29,13 @@
 }
 
 .footer-divider{
-	margin-bottom: 60px;
+	margin-bottom: 40px;
+}
+
+.side-divide{
+	margin-left: 20px;
+}
+
+.inline-form{
+	display: inline-block;
 }

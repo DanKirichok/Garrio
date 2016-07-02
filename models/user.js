@@ -33,6 +33,12 @@ var UserSchema = mongoose.Schema({
 	bio: {
 		type: String,
 		default: "Hello!"
+	},
+	notifications: {
+		type: [],
+	},
+	messages: {
+		type: {},
 	}
 	
 });

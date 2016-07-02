@@ -3,7 +3,7 @@ var router = express.Router();
 
 var User = require('../models/user');
 
-//Get homepage
+//Home page
 router.get('/', ensureAuthenticated, function(req, res){	
 	var context = {
 		first_name: req.user.first_name,
@@ -16,7 +16,65 @@ router.get('/', ensureAuthenticated, function(req, res){
 	res.render('index', context);
 });
 
-//Edit Profile
+//Friends Page
+router.get('/friends', ensureAuthenticated, function(req, res){	
+	pendingFriendsList = [];
+	acceptedFriendsList = [];
+	
+	//This sorts the friends list into pending and accepted lists
+	//I might store this data in the database later on
+	for (var i = 0; i < req.user.friends.length; i ++){
+		if (req.user.friends[i].accepted){
+			User.getUserByUsername(req.user.friends[i].username, function(err, user){
+				acceptedFriendsList.push(user);
+				
+				//This is to see if it is the last friend and if so it renders the page
+				if (i >= req.user.friends.length){
+					var context = {
+						acceptedFriendsList: acceptedFriendsList,
+						pendingFriendsList: pendingFriendsList,
+						amnt_pending: pendingFriendsList.length,
+						amnt_friends: acceptedFriendsList.length,
+					}	
+					
+					res.render('friends', context);	
+				}
+			})
+		}else{
+			User.getUserByUsername(req.user.friends[i].username, function(err, user){
+				pendingFriendsList.push(user);
+								
+				//This is to see if it is the last friend and if so it renders the page
+				if (i >= req.user.friends.length){
+					var context = {
+						acceptedFriendsList: acceptedFriendsList,
+						pendingFriendsList: pendingFriendsList,
+						amnt_pending: pendingFriendsList.length,
+						amnt_friends: acceptedFriendsList.length,
+					}	
+					
+					res.render('friends', context);	
+				}
+			})
+		}
+	}
+});
+
+//Notifications Page
+router.get('/notifications', ensureAuthenticated, function(req, res){	
+	var context = {}
+	
+	res.render('notifications', context);
+});
+
+//Messages Page
+router.get('/messages', ensureAuthenticated, function(req, res){	
+	var context = {}
+	
+	res.render('messages', context);
+});
+
+//Edit Profile Page
 router.get('/edit_profile', ensureAuthenticated, function(req, res){	
 	var context = {
 		bio: req.user.bio,
@@ -26,8 +84,27 @@ router.get('/edit_profile', ensureAuthenticated, function(req, res){
 	res.render('edit_profile', context);
 });
 
+//Runs when send friend request is pressed
+router.post('/processing', ensureAuthenticated, function(req, res){
+	var username = req.body.user;
+		
+	var friendRequest = {
+		username: username,
+		accepted: false, 
+	}
+
+	//This updates the bio of the user to what the user had input into the form
+	User.update({_id: req.user._id}, {$push:{friends: friendRequest}}, function(err, result){
+		if (err) throw err;
+	});
+
+	context = {}
+
+	res.render('processing', context)
+});
+
 //Posts the submitted data in edit profile
-router.post('/', ensureAuthenticated, function(req, res){	
+router.post('/', ensureAuthenticated, function(req, res){
 	var bio = req.body.bio;
 	var profile_pic = req.body.profile_pic_selector;
 		
