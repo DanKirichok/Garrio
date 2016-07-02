@@ -24,7 +24,11 @@ router.get('/friends', ensureAuthenticated, function(req, res){
 	var requestedFriendsList = req.user.requested_friends;
 	var pendingFriendsList = req.user.pending_friends;
 	var acceptedFriendsList = req.user.accepted_friends;
-
+	
+	var totalFriends = requestedFriendsList.length + pendingFriendsList.length + acceptedFriendsList.length
+	
+	console.log("Total friends: " + totalFriends)
+	
 	//This is where the data of the full friends list is stored
 	//It gets populated in the big loop below
 	var newRequestedFriendsList = [];
@@ -35,6 +39,9 @@ router.get('/friends', ensureAuthenticated, function(req, res){
 	var friends = [requestedFriendsList, pendingFriendsList, acceptedFriendsList];
 	
 	//This is a big jumbled mess but I couldn't think of another way to do it
+	
+	var totalFriends = requestedFriendsList.length + pendingFriendsList.length + acceptedFriendsList.length 
+	var friendsSorted = 0;
 	
 	//This loops once through all the lists to get all of the usernames of the friends
 	for (var listNum = 0; listNum < friends.length; listNum ++){
@@ -49,7 +56,6 @@ router.get('/friends', ensureAuthenticated, function(req, res){
 				and as a result the numbers cannot be reused*/
 				for (var newListNum = 0; newListNum < friends.length; newListNum ++){
 					for (var newListUser = 0; newListUser < friends[newListNum].length; newListUser ++){
-						console.log(friends[newListNum][newListUser])
 						if (friends[newListNum][newListUser] == user.username){
 							
 							//These numbers are based off the position of each list in the friends list
@@ -57,18 +63,22 @@ router.get('/friends', ensureAuthenticated, function(req, res){
 								newRequestedFriendsList[newListUser] = user;
 							}else if (newListNum == 1){
 								newPendingFriendsList[newListUser] = user;
-								console.log(newPendingFriendsList);
-
 							}else if (newListNum == 2){
 								newAcceptedFriendsList[newListUser] = user;
 							}
 						}
 					}
 					
-					//Since the querying loop always finishes after the loop around this
-					//I only check for the variable used in the new loop
-					if (newListNum == friends.length - 1){
-						
+					/*This is to help debug problems
+					
+					console.log("friends.length: " + friends.length);
+					console.log("newListNum: " + newListNum);
+					
+					console.log("Friends sorted: " + friendsSorted);
+					console.log('');
+					*/
+					
+					if (friendsSorted == totalFriends){
 						//Page is rendered with the friends list filled with appropriate info
 						var context = {
 							requestedFriendsList: newRequestedFriendsList,
@@ -77,6 +87,8 @@ router.get('/friends', ensureAuthenticated, function(req, res){
 						}
 						
 						res.render('friends', context);
+						
+						break;
 					}
 				}
 			});
@@ -97,6 +109,41 @@ router.get('/messages', ensureAuthenticated, function(req, res){
 	
 	res.render('messages', context);
 });
+
+router.get('/user_result', function(req, res){
+	var username = req.query['username']
+	
+	console.log(username)
+	
+	var first_name;
+	var last_name;
+	var profile_pic;
+	var bio;
+	
+	User.getUserByUsername(username, function(err, user){
+		if(err) throw err;
+		if (user != null){
+			first_name = user.first_name;
+			last_name = user.last_name;
+			profile_pic = user.profile_pic;
+			bio = user.bio;
+						
+			var context = {
+				username: username,
+				first_name: first_name,
+				last_name: last_name,
+				username: username,
+				profile_pic: profile_pic,
+				bio: bio,
+			}
+			
+			res.render('user_result', context)
+		}else{
+			req.flash('error_msg', username + ' was not found.');
+			res.redirect('/');
+		}
+	})
+})
 
 //Edit Profile Page
 router.get('/edit_profile', ensureAuthenticated, function(req, res){	
@@ -150,40 +197,6 @@ router.post('/', ensureAuthenticated, function(req, res){
 	}
 	
 	res.render('index', context)
-});
-
-//Posts the submitted data in edit profile
-router.post('/user_result', ensureAuthenticated, function(req, res){		
-	var username = req.body.username
-	
-	var first_name;
-	var last_name;
-	var profile_pic;
-	var bio;
-	
-	User.getUserByUsername(username, function(err, user){
-		if(err) throw err;
-		if (user != null){
-			first_name = user.first_name;
-			last_name = user.last_name;
-			profile_pic = user.profile_pic;
-			bio = user.bio;
-						
-			var context = {
-				username: username,
-				first_name: first_name,
-				last_name: last_name,
-				username: username,
-				profile_pic: profile_pic,
-				bio: bio,
-			}
-			
-			res.render('user_result', context)
-		}else{
-			req.flash('error_msg', username + ' was not found.');
-			res.redirect('/');
-		}
-	})
 });
 
 function ensureAuthenticated(req, res, next){

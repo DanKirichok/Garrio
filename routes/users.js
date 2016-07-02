@@ -71,16 +71,6 @@ router.post('/register', function(req, res){
 							if (err) throw err;
 						});
 						
-						mkdirp('users/' + username, function(err){
-							if (err) throw err;
-							var source = fs.createReadStream('public/profile_pics/pic_1.jpg');
-							var dest = fs.createWriteStream('users/' + username + "/profile_pic.jpg");
-							
-							source.pipe(dest);
-							source.on('end', function() { /* copied */ });
-							source.on('error', function(err) { /* error */ });
-						})
-						
 						req.flash('success_msg', 'You are registered and can now login.');
 						res.redirect('/users/login');
 					}
