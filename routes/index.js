@@ -18,44 +18,68 @@ router.get('/', ensureAuthenticated, function(req, res){
 
 //Friends Page
 router.get('/friends', ensureAuthenticated, function(req, res){	
-	pendingFriendsList = [];
-	acceptedFriendsList = [];
+	//These are the 3 different types of friends lists you have
+	//acceptedFriendsList is where the full friends are where one has requested and the other has accepted 
+	//These only contain the usernames of the friends and nothing else
+	var requestedFriendsList = req.user.requested_friends;
+	var pendingFriendsList = req.user.pending_friends;
+	var acceptedFriendsList = req.user.accepted_friends;
+
+	//This is where the data of the full friends list is stored
+	//It gets populated in the big loop below
+	var newRequestedFriendsList = [];
+	var newPendingFriendsList = [];
+	var newAcceptedFriendsList = [];
 	
-	//This sorts the friends list into pending and accepted lists
-	//I might store this data in the database later on
-	for (var i = 0; i < req.user.friends.length; i ++){
-		if (req.user.friends[i].accepted){
-			User.getUserByUsername(req.user.friends[i].username, function(err, user){
-				acceptedFriendsList.push(user);
+	//DO NOT CHANGE ORDER OF THIS
+	var friends = [requestedFriendsList, pendingFriendsList, acceptedFriendsList];
+	
+	//This is a big jumbled mess but I couldn't think of another way to do it
+	
+	//This loops once through all the lists to get all of the usernames of the friends
+	for (var listNum = 0; listNum < friends.length; listNum ++){
+		for (var listUser = 0; listUser < friends[listNum].length; listUser ++){
+			
+			//This queries the db to find the whole data set for the users with the specified username			
+			User.getUserByUsername(friends[listNum][listUser], function(err, user){
 				
-				//This is to see if it is the last friend and if so it renders the page
-				if (i >= req.user.friends.length){
-					var context = {
-						acceptedFriendsList: acceptedFriendsList,
-						pendingFriendsList: pendingFriendsList,
-						amnt_pending: pendingFriendsList.length,
-						amnt_friends: acceptedFriendsList.length,
-					}	
+				/*Starts looping again to find the position of
+				where the user was because if loses it
+				because the query is slower than the loop 
+				and as a result the numbers cannot be reused*/
+				for (var newListNum = 0; newListNum < friends.length; newListNum ++){
+					for (var newListUser = 0; newListUser < friends[newListNum].length; newListUser ++){
+						console.log(friends[newListNum][newListUser])
+						if (friends[newListNum][newListUser] == user.username){
+							
+							//These numbers are based off the position of each list in the friends list
+							if (newListNum == 0){
+								newRequestedFriendsList[newListUser] = user;
+							}else if (newListNum == 1){
+								newPendingFriendsList[newListUser] = user;
+								console.log(newPendingFriendsList);
+
+							}else if (newListNum == 2){
+								newAcceptedFriendsList[newListUser] = user;
+							}
+						}
+					}
 					
-					res.render('friends', context);	
+					//Since the querying loop always finishes after the loop around this
+					//I only check for the variable used in the new loop
+					if (newListNum == friends.length - 1){
+						
+						//Page is rendered with the friends list filled with appropriate info
+						var context = {
+							requestedFriendsList: newRequestedFriendsList,
+							pendingFriendsList: newPendingFriendsList,
+							acceptedFriendsList: newAcceptedFriendsList,
+						}
+						
+						res.render('friends', context);
+					}
 				}
-			})
-		}else{
-			User.getUserByUsername(req.user.friends[i].username, function(err, user){
-				pendingFriendsList.push(user);
-								
-				//This is to see if it is the last friend and if so it renders the page
-				if (i >= req.user.friends.length){
-					var context = {
-						acceptedFriendsList: acceptedFriendsList,
-						pendingFriendsList: pendingFriendsList,
-						amnt_pending: pendingFriendsList.length,
-						amnt_friends: acceptedFriendsList.length,
-					}	
-					
-					res.render('friends', context);	
-				}
-			})
+			});
 		}
 	}
 });
@@ -87,14 +111,13 @@ router.get('/edit_profile', ensureAuthenticated, function(req, res){
 //Runs when send friend request is pressed
 router.post('/processing', ensureAuthenticated, function(req, res){
 	var username = req.body.user;
-		
-	var friendRequest = {
-		username: username,
-		accepted: false, 
-	}
-
+	
+	//User.getUserByUsername(username, function(err, user){
+		//console.log(user._id)
+	//})
+	
 	//This updates the bio of the user to what the user had input into the form
-	User.update({_id: req.user._id}, {$push:{friends: friendRequest}}, function(err, result){
+	User.update({_id: req.user._id}, {$push:{pending_friends: username}}, function(err, result){
 		if (err) throw err;
 	});
 

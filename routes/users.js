@@ -3,6 +3,9 @@ var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
+var mkdirp = require('mkdirp');
+var fs = require('fs');
+
 var User = require('../models/user');
 
 //Register
@@ -67,6 +70,16 @@ router.post('/register', function(req, res){
 						User.createUser(newUser, function(err, user){
 							if (err) throw err;
 						});
+						
+						mkdirp('users/' + username, function(err){
+							if (err) throw err;
+							var source = fs.createReadStream('public/profile_pics/pic_1.jpg');
+							var dest = fs.createWriteStream('users/' + username + "/profile_pic.jpg");
+							
+							source.pipe(dest);
+							source.on('end', function() { /* copied */ });
+							source.on('error', function(err) { /* error */ });
+						})
 						
 						req.flash('success_msg', 'You are registered and can now login.');
 						res.redirect('/users/login');

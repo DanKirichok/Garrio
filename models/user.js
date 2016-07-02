@@ -23,7 +23,13 @@ var UserSchema = mongoose.Schema({
 	last_name: {
 		type: String
 	},
-	friends: {
+	requested_friends: {
+		type: []
+	},
+	pending_friends: {
+		type: []
+	},
+	accepted_friends: {
 		type: []
 	},
 	profile_pic: {
@@ -38,7 +44,7 @@ var UserSchema = mongoose.Schema({
 		type: [],
 	},
 	messages: {
-		type: {},
+		type: [],
 	}
 	
 });
