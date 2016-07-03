@@ -220,6 +220,14 @@ router.post('/fr_accept', ensureAuthenticated, function(req, res){
 router.post('/remove_friend', ensureAuthenticated, function(req, res){
 	var username = req.body.user
 	
+	//Removs each other from accepted_friends list
+	User.update({username: req.user.username}, {$pull:{accepted_friends: username}}, function(err, result){
+		if (err) throw err;
+	});
+	User.update({username: username}, {$pull:{accepted_friends: req.user.username}}, function(err, result){
+		if (err) throw err;
+	});
+	
 	context = {}
 	
 	
