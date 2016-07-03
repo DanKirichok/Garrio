@@ -1,29 +1,57 @@
-{{#if pendingFriendsList}}
+{{#if requestedFriendsList}}
 	<h2 class =  "page-header">
-		{{ amnt_pending }} Pending Requests
+		{{ amnt_pending }} Friend Requests
 	</h2>
-	{{#each pendingFriendsList}}
-		<div class="panel panel-default">
-			<div class="panel-body">
-				<img class = "list_pic" name = {{ this.profile_pic }}></img>
-				{{ this.username }}
+	{{#each requestedFriendsList}}
+		<a class = "friendsBlock" name = {{ this.username }}>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<img class = "list_pic" name = {{ this.profile_pic }}></img>
+					<p class = "lead friendsName">{{ this.username }}</p>
+					<form class = "pull-right" method = "post" action = "fr_decline">
+						<input name = "user" type = "hidden" value = "{{ this.username }}">
+						<button type = "submit" class = "btn btn-danger"><i class="fa fa-times" aria-hidden="true"></i></button>
+					</form>
+					<form class = "acceptFR pull-right" method = "post" action = "fr_accept">
+						<input name = "user" type = "hidden" value = "{{ this.username }}">
+						<button type = "submit" class = "btn btn-success"><i class="fa fa-check" aria-hidden="true"></i></button>
+					</form>
+				</div>
 			</div>
-		</div>
+		</a>
 	{{/each}}
 {{/if}}
-
-<h2 class =  "page-header">
-	{{ amnt_friends }} Friends
-</h2>
-{{#each acceptedFriendsList}}
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<img class = "list_pic" name = {{ this.user.profile_pic }}></img>
-			{{ this.user.username }}
-		</div>
-	</div>
-{{/each}}
-
+{{#if pendingFriendsList}}
+	<h2 class =  "page-header">
+		{{ amnt_pending }} Pending Friend Requests
+	</h2>
+	{{#each pendingFriendsList}}
+		<a class = "friendsBlock" name = {{ this.username }}>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<img class = "list_pic" name = {{ this.profile_pic }}></img>
+					<p class = "lead friendsName">{{ this.username }}</p>
+				</div>
+			</div>
+		</a>
+	{{/each}}
+{{/if}}
+{{#if acceptedFriendsList}}
+	<h2 class =  "page-header">
+		{{ amnt_friends }} Friends
+	</h2>
+	{{#each acceptedFriendsList}}
+		<a class = "friendsBlock" name = {{ this.username }}>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<img class = "list_pic" name = {{ this.profile_pic }}></img>
+					<p class = "lead friendsName">{{ this.username }}</p>
+				</div>
+			</div>
+		</a>
+	{{/each}}
+{{/if}}
 <script>
 	listProfilePics();
+	listHrefs();
 </script>

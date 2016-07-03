@@ -10,6 +10,7 @@ body{
 
 .list_pic{
 	border-radius: 50%;
+	height: 70px;
 }
 
 .profile_name{
@@ -38,4 +39,33 @@ body{
 
 .inline-form{
 	display: inline-block;
+}
+
+.acceptFR{
+	margin-right: 40px;
+}
+
+.friendsBlock:link{
+	text-decoration: none;
+}
+
+.friendsBlock:visited{
+	text-decoration: none;
+}
+
+.friendsBlock:hover{
+	text-decoration: none;
+}
+
+.friendsBlock:active{
+	text-decoration: none;
+}
+
+.friendsName{
+	display: inline-block;
+	margin-left: 20px;
+}
+
+.removeFriendBtn{
+	width: 100%;
 }

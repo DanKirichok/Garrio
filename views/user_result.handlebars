@@ -1,10 +1,36 @@
-<h2 class =  "page-header">
-	{{ username }}'s Profile
-	<form class = "inline-form pull-right" method = "post" action = "/processing">
-		<input name = "user" id = "usernameFR" type = "hidden">
-		<button type = "submit" class = "btn btn-primary pull-right">Send Friend Request</button>
-	</form>
-</h2>
+<h3 class =  "page-header">
+	{{ username }}
+	{{#if not_friend}}
+		<form class = "inline-form pull-right" method = "post" action = "/processing">
+			<input name = "user" id = "usernameFR" type = "hidden">
+			<button type = "submit" class = "btn btn-primary pull-right">Send Friend Request</button>
+		</form>
+	{{else if pending_friend}}
+		<button type = "submit" class = "btn btn-primary pull-right disabled">Friend Request Pending</button>
+	{{else if requested_friend}}
+		<form class = "pull-right" method = "post" action = "fr_decline">
+			<input name = "user" type = "hidden" value = "{{ username }}">
+			<button type = "submit" class = "btn btn-danger"><i class="fa fa-times" aria-hidden="true"></i></button>
+		</form>
+		<form class = "acceptFR pull-right" method = "post" action = "fr_accept">
+			<input name = "user" type = "hidden" value = "{{ username }}">
+			<button type = "submit" class = "btn btn-success"><i class="fa fa-check" aria-hidden="true"></i></button>
+		</form>
+	{{else if accepted_friend}}
+		<div class="btn-group pull-right">
+			<a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+				Your Friend
+				<span class="caret"></span>
+			</a>
+			<ul class="dropdown-menu">
+				<form method = "post" action = "/remove_friend">
+					<input name = "user" type = "hidden" value = "{{ username }}">
+					<button type = "submit" class = "btn btn-link removeFriendBtn">Remove Friend</button>
+				</form>
+			</ul>
+		</div>
+	{{/if}}
+</h3>
 <div class = "col-md-3 organizer">
 	<div>
 		<img class = "profile_pic" src = ""></img>
@@ -20,7 +46,6 @@
 		<label class = "profile_name">Username:</label>
 		<text>{{ username }}</text>
 	</div>
-	<script>getProfilePic("{{ profile_pic }}")</script>
 </div>
 <div class = "organizer col-md-9">
 	Timeline will go here

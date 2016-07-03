@@ -10,6 +10,12 @@ function listProfilePics(){
 	}
 }
 
+function listHrefs(){
+	for (var i = 0; i < document.getElementsByClassName("friendsBlock").length; i ++){
+		document.getElementsByClassName("friendsBlock")[i].href = "/user_result?username=" + document.getElementsByClassName("friendsBlock")[i].getAttribute("name")
+	}
+}
+
 //This presets the bio to the one the user has in edit profile page
 function updateBio(bio){
 	document.getElementById("update_bio_text").value = bio
@@ -24,7 +30,9 @@ function updateProfilePic(profile_pic){
 }
 
 function sendUsernameFR(username){
-	document.getElementById("usernameFR").value = username;
+	if (document.getElementById("usernameFR")){
+		document.getElementById("usernameFR").value = username;
+	}
 }
 
 //Selects the active window in the navbar
