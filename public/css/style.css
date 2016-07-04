@@ -10,7 +10,7 @@ body{
 
 .list_pic{
 	border-radius: 50%;
-	height: 70px;
+	height: 40px;
 }
 
 .profile_name{
@@ -41,8 +41,16 @@ body{
 	display: inline-block;
 }
 
+.real-inline-form{
+	display: inline;
+}
+
 .acceptFR{
 	margin-right: 40px;
+}
+
+.friendsBlock{
+	color: white;
 }
 
 .friendsBlock:link{
@@ -55,6 +63,7 @@ body{
 
 .friendsBlock:hover{
 	text-decoration: none;
+	color: white;
 }
 
 .friendsBlock:active{
@@ -68,4 +77,28 @@ body{
 
 .removeFriendBtn{
 	width: 100%;
+}
+
+.inline-block{
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.post-title-name{
+	margin-left: 20px;
+	font-weight: bold;
+	margin-bottom: 2px !important;
+}
+
+.post-title-username{
+	margin-left: 20px;
+}
+
+.post-title-date{
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.statusInput{
+	resize: none;
 }

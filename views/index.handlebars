@@ -17,9 +17,42 @@
 		<label class = "profile_name">Username:</label>
 		<text>{{ username }}</text>
 	</div>
-	<script>getProfilePic("{{ profile_pic }}")</script>
 </div>
 <div class = "organizer col-md-9">
-	Timeline will go here
+	<form id = "statusForm" method = "post" action = "/new_status">
+		<div class="makeStatus text-center input-group">
+			<textarea placeholder = "Speak your mind!" class = "form-control custom-control statusInput" name = "status"></textarea>
+			<span onClick = "document.getElementById('statusForm').submit()" class = "statusSubmit input-group-addon btn btn-primary" type = "submit"><i class="fa fa-paper-plane" aria-hidden="true"></i></span>
+		</div>
+	</form>
+	<h3 class =  "page-header">
+		Your Timeline
+	</h3>
+	{{#each user_timeline}}
+		<div class="panel panel-primary">
+				<div class="panel-heading">
+					<a class = "friendsBlock" name = {{ ../username }}>
+						<img class = "list_pic" name = {{../profile_pic}}></img>
+							
+						<div class = "inline-block">
+							<h3 class="post-title-name panel-title">{{../first_name}} {{../last_name}}</h3>
+							<h3 class="post-title-username panel-title">{{ this.time }}</h3>
+						</div>
+						<form class = "real-inline-form" method = "post" action = "/remove_post">
+							<input name = "postID" type = "hidden" value = {{ this.id }}>
+							<button type = "submit" class = "btn btn-default pull-right"><i class="fa fa-times" aria-hidden="true"></i></button>
+						</form>
+					</a>
+				</div>
+			<div class="panel-body">
+				{{ this.content }}
+			</div>
+		</div>
+		
+	{{/each}}
 </div>
-
+<script>
+	getProfilePic("{{ profile_pic }}");
+	listProfilePics();
+	listHrefs();
+</script>

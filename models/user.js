@@ -45,7 +45,13 @@ var UserSchema = mongoose.Schema({
 	},
 	messages: {
 		type: [],
-	}
+	},
+	user_timeline: {
+		type: [],
+	},
+	friend_timeline: {
+		type: [],
+	},
 	
 });
 

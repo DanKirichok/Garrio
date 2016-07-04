@@ -48,3 +48,45 @@ function selectActiveWindow(){
 		document.getElementById("messagesPage").setAttribute("class", "active");
 	}
 }
+
+//This function is used in the server side of the program
+module.exports = {
+	getFormattedDate: function(){
+		var date = new Date();
+		
+		var months = [
+			"Jan",
+			"Feb",
+			"Mar",
+			"Apr",
+			"May",
+			"Jun",
+			"Jul",
+			"Aug",
+			"Sep",
+			"Oct",
+			"Nov",
+			"Dec",
+		]
+		
+		var month = months[date.getMonth()];
+		var day = date.getDate();
+		var year = date.getFullYear();
+		
+		var hours = date.getHours();
+		var minutes = date.getMinutes();
+		var hour = hours % 12 || 12;
+		var suffix = "AM"
+
+		if (hours > 11){
+			suffix = "PM"
+		}
+		
+		if (minutes.length == 1){
+			day = "0" + minutes.String
+		}
+
+		var formattedDate = hour + ":" + minutes + " " + suffix + " " + month + " " + day + " " + year
+		return formattedDate
+	}
+}

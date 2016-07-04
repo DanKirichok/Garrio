@@ -2,15 +2,17 @@ var express = require('express');
 var router = express.Router();
 
 var User = require('../models/user');
+var Main = require('../public/js/main')
 
 //Home page
-router.get('/', ensureAuthenticated, function(req, res){	
+router.get('/', ensureAuthenticated, function(req, res){
 	var context = {
 		first_name: req.user.first_name,
 		last_name: req.user.last_name,
 		username: req.user.username,
 		profile_pic: req.user.profile_pic,
 		bio: req.user.bio,
+		user_timeline: req.user.user_timeline,
 	}
 	
 	res.render('index', context);
@@ -135,50 +137,55 @@ router.get('/user_result', function(req, res){
 	
 	//KEEP THIS ORDER
 	var friends = [requestedFriendsList, pendingFriendsList, acceptedFriendsList];			
-		
-	User.getUserByUsername(username, function(err, user){
-		if(err) throw err;
-		if (user != null){
-			first_name = user.first_name;
-			last_name = user.last_name;
-			profile_pic = user.profile_pic;
-			bio = user.bio;
-						
-			var context = {
-				username: username,
-				first_name: first_name,
-				last_name: last_name,
-				username: username,
-				profile_pic: profile_pic,
-				bio: bio,
-				not_friend: true,
-				requested_friend: false,
-				pending_friend: false,
-				accepted_friend: false,				
-			}
-						
-			for (var listNum = 0; listNum < friends.length; listNum ++){
-				for (var userNum = 0; userNum < friends[listNum].length; userNum ++){
-					if (friends[listNum][userNum] == username){
-						context.not_friend = false;
-						
-						if (listNum == 0){
-							context.requested_friend = true;
-						}else if (listNum == 1){
-							context.pending_friend = true;
-						}else if (listNum == 2){
-							context.accepted_friend = true;
+	
+	if (username == req.user.username){
+		req.flash('error_msg', 'Your profile is right here you silly goose!');
+		res.redirect('/');
+	}else{		
+		User.getUserByUsername(username, function(err, user){
+			if(err) throw err;
+			if (user != null){
+				first_name = user.first_name;
+				last_name = user.last_name;
+				profile_pic = user.profile_pic;
+				bio = user.bio;
+							
+				var context = {
+					username: username,
+					first_name: first_name,
+					last_name: last_name,
+					username: username,
+					profile_pic: profile_pic,
+					bio: bio,
+					not_friend: true,
+					requested_friend: false,
+					pending_friend: false,
+					accepted_friend: false,				
+				}
+							
+				for (var listNum = 0; listNum < friends.length; listNum ++){
+					for (var userNum = 0; userNum < friends[listNum].length; userNum ++){
+						if (friends[listNum][userNum] == username){
+							context.not_friend = false;
+							
+							if (listNum == 0){
+								context.requested_friend = true;
+							}else if (listNum == 1){
+								context.pending_friend = true;
+							}else if (listNum == 2){
+								context.accepted_friend = true;
+							}
 						}
 					}
 				}
+							
+				res.render('user_result', context)
+			}else{
+				req.flash('error_msg', username + ' was not found.');
+				res.redirect('/');
 			}
-						
-			res.render('user_result', context)
-		}else{
-			req.flash('error_msg', username + ' was not found.');
-			res.redirect('/');
-		}
-	})
+		})
+	}
 })
 
 //Edit Profile Page
@@ -211,7 +218,7 @@ router.post('/fr_accept', ensureAuthenticated, function(req, res){
 		if (err) throw err;
 	});
 	
-	context = {}
+	var context = {}
 
 	req.flash('success_msg', 'Accepted ' + username + ' as a friend.');
 	res.redirect('/friends');
@@ -228,10 +235,53 @@ router.post('/remove_friend', ensureAuthenticated, function(req, res){
 		if (err) throw err;
 	});
 	
-	context = {}
+	var context = {}
 	
 	
 	req.flash('success_msg', 'Removed ' + username + ' as a friend.');
+	res.redirect('/');
+})
+
+router.post('/new_status', ensureAuthenticated, function(req, res){
+	var status = req.body.status
+	
+	var user_timeline = req.user.user_timeline
+	var new_user_timeline = []
+		
+	var fullPost = {
+		id: user_timeline.length,
+		type: "status",
+		time: Main.getFormattedDate(),
+		from: req.user.username,
+		content: status,
+	}
+	
+	new_user_timeline.push(fullPost)
+	
+	for (var i = 0; i < user_timeline.length; i++){
+		new_user_timeline.push(user_timeline[i])
+	}
+		
+	User.update({username: req.user.username}, {user_timeline: new_user_timeline}, function(err, result){
+		if (err) throw err;
+	});
+	
+	var context = {};
+	
+	res.redirect('/');
+})
+
+router.post('/remove_post', ensureAuthenticated, function(req, res){
+	//This is because new values are stored at beginning of array so you have to find the opposite value of id
+	var postID = Number(req.body.postID)
+
+	//Removes friend request from both users
+	User.update({username: req.user.username}, {$pull:{user_timeline: { id: postID } } }, function(err, result){
+		if (err) throw err;
+	});	
+	var context = {}
+
+	req.flash('success_msg', 'Post Removed!');
 	res.redirect('/');
 })
 
@@ -247,7 +297,7 @@ router.post('/fr_decline', ensureAuthenticated, function(req, res){
 		if (err) throw err;
 	});
 	
-	context = {}
+	var context = {}
 
 	req.flash('success_msg', 'Declined ' + username + ' as a friend.');
 	res.redirect('/friends');
