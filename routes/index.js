@@ -297,12 +297,14 @@ router.post('/like_post', ensureAuthenticated, function(req, res){
 		
 		var postLiked = false;
 		
+		console.log(user.username);
+		
 		for (var i = 0; i < user_timeline.length; i++){
 			if (user_timeline[i].id == postID){
 				if (liked_posts.length > 0){
 					for (var x = 0; x < liked_posts.length; x ++){
-						if (liked_posts[x].id == postID){
-							postLiked = true
+						if (liked_posts[x].id == postID && liked_posts[x].from == from){
+							postLiked = true;
 						}
 					}
 				}
