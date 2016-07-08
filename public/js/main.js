@@ -81,12 +81,34 @@ module.exports = {
 		if (hours > 11){
 			suffix = "PM"
 		}
-		
-		if (minutes.length == 1){
-			day = "0" + minutes.String
+				
+		if (minutes.toString().length == 1){
+			minutes = "0" + minutes.toString()
 		}
 
 		var formattedDate = hour + ":" + minutes + " " + suffix + " " + month + " " + day + " " + year
 		return formattedDate
+	},
+	
+	//Gets users liked posts and adds category to timeline that says whether the user has liked a post
+	//The new category is not saved in database and is only made when timeline viewed
+	getLikedPostsInTimeline: function(timeline, likedPosts){
+		var timelineLikedPosts = [];
+		for (var timelinePost = 0; timelinePost < timeline.length; timelinePost++){
+			for (var likedPost = 0; likedPost < likedPosts.length; likedPost ++){
+				if (!timeline[timelinePost]["liked"]){
+					if (timeline[timelinePost].from == likedPosts[likedPost].from){
+						if (timeline[timelinePost].id == likedPosts[likedPost].id){
+							timelineLikedPosts.push(timelinePost);
+							timeline[timelinePost].liked = true;
+						}else{
+							timeline[timelinePost].liked = false;
+						}
+					}
+				}
+			}
+		}		
+		return timeline;
 	}
+	
 }

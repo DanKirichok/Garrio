@@ -78,9 +78,21 @@ app.use(function (req, res, next) {
 app.use('/', routes);
 app.use('/users', users);
 
+//Development settings
 // Set Port
+/*
 app.set('port', (process.env.PORT || 4000));
 
 app.listen(app.get('port'), function(){
 	console.log('Server started on port '+app.get('port'));
 });
+*/
+
+//Openshift settings
+//This is for openshift deployment
+var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+
+http.listen(port, ipaddress, function(){
+	console.log('Running on Openshift Server')
+})

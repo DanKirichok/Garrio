@@ -26,27 +26,59 @@
 		</div>
 	</form>
 	<h3 class =  "page-header">
-		Your Timeline
+		Timeline
 	</h3>
 	{{#each user_timeline}}
 		<div class="panel panel-primary">
-				<div class="panel-heading">
-					<a class = "friendsBlock" name = {{ ../username }}>
-						<img class = "list_pic" name = {{../profile_pic}}></img>
-							
-						<div class = "inline-block">
-							<h3 class="post-title-name panel-title">{{../first_name}} {{../last_name}}</h3>
-							<h3 class="post-title-username panel-title">{{ this.time }}</h3>
-						</div>
-						<form class = "real-inline-form" method = "post" action = "/remove_post">
-							<input name = "postID" type = "hidden" value = {{ this.id }}>
-							<button type = "submit" class = "btn btn-default pull-right"><i class="fa fa-times" aria-hidden="true"></i></button>
-						</form>
-					</a>
-				</div>
+			<div class="panel-heading">
+				<a class = "friendsBlock whiteFont" name = {{ ../username }}>
+					<img class = "list_pic" name = {{../profile_pic}}></img>
+						
+					<div class = "inline-block">
+						<h3 class="post-title-name panel-title">{{../first_name}} {{../last_name}}</h3>
+						<h3 class="post-title-username panel-title">{{ this.time }}</h3>
+					</div>
+					<form class = "real-inline-form" method = "post" action = "/remove_post">
+						<input name = "postID" type = "hidden" value = {{ this.id }}>
+						<button type = "submit" class = "btn btn-default pull-right"><i class="fa fa-times" aria-hidden="true"></i></button>
+					</form>
+				</a>
+			</div>
 			<div class="panel-body">
 				{{ this.content }}
 			</div>
+			 <div class="panel-footer">
+				{{this.amnt_comments}}
+				<span class = "post-icon toggle-dropdown" data-target = "#{{this.id}}" data-toggle="collapse" aria-expanded="false" aria-haspopup="true">
+					<i class="fa fa-comment" aria-hidden="true"></i>
+				</span>
+				<form class = "inline-form" id = "{{this.from}}_{{this.id}}_form" method = "post" action = "/like_post">
+					<input id = "{{this.from}}_{{this.id}}_likePostID" type = "hidden" value = "{{this.id}}" name = "postID">
+					<input id = "{{this.from}}_{{this.id}}_likePostFrom" type = "hidden" value = "{{this.from}}" name = "postFrom">
+					<label value = "{{this.likes}}" id = "{{this.from}}_{{this.id}}_label">{{this.likes}}</label>
+					<script></script>
+					{{#if this.[liked]}}
+						<span id = "{{this.from}}_{{this.id}}" class = "submitLikedPost post-icon toggle-dropdown">
+							<i id = "{{this.from}}_{{this.id}}_likeIcon" class = "fa fa-thumbs-up liked"  aria-hidden="true"></i>
+						</span>
+					{{else}}
+						<span id = "{{this.from}}_{{this.id}}" class = "submitLikedPost post-icon toggle-dropdown">
+							<i id = "{{this.from}}_{{this.id}}_likeIcon" class = "fa fa-thumbs-o-up"  aria-hidden="true"></i>
+						</span>
+					{{/if}}
+				</form>
+
+				<div id = "{{this.id}}" class = "comment-section collapse" aria-expanded = "true">
+					<form id = "commentForm" method = "post" action = "/post_comment">
+						<div class="post-comment text-center input-group">
+							<input placeholder = "Post a comment!" class = "form-control custom-control statusInput" name = "post_comment" type = "text">
+							<span onClick = "document.getElementById('commentForm').submit()" class = "statusSubmit input-group-addon btn btn-primary" type = "submit">
+								<i class="fa fa-paper-plane" aria-hidden="true"></i>
+							</span>
+						</div>
+					</form>
+				</div>
+			 </div>
 		</div>
 		
 	{{/each}}
@@ -55,4 +87,24 @@
 	getProfilePic("{{ profile_pic }}");
 	listProfilePics();
 	listHrefs();
+	
+	$(".submitLikedPost").click(function(){
+		var btnId = "#" + this.id;
+		var formId = "#" + this.id + "_form";
+		var iconId = "#" + this.id + "_likeIcon";
+		var labelId = "#" + this.id + "_label";
+		
+		$.post('/like_post',{
+			postID: $(btnId + "_likePostID").val(),
+			from: $(btnId + "_likePostFrom").val(),
+		})
+				
+		if ($(iconId).attr('class').indexOf("liked") >= 0){
+			$(iconId).attr('class', 'fa fa-thumbs-o-up');
+			$(labelId).text(Number($(labelId).text()) - 1)
+		}else{
+			$(iconId).attr('class', "fa fa-thumbs-up liked")
+			$(labelId).text(Number($(labelId).text()) + 1)
+		}
+	})
 </script>

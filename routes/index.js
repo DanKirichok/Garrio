@@ -6,13 +6,16 @@ var Main = require('../public/js/main')
 
 //Home page
 router.get('/', ensureAuthenticated, function(req, res){
+	//This updated timeline has each post specified if user has liked it or not
+	var updated_timeline = Main.getLikedPostsInTimeline(req.user.user_timeline, req.user.liked_posts);
+		
 	var context = {
 		first_name: req.user.first_name,
 		last_name: req.user.last_name,
 		username: req.user.username,
 		profile_pic: req.user.profile_pic,
 		bio: req.user.bio,
-		user_timeline: req.user.user_timeline,
+		user_timeline: updated_timeline,
 	}
 	
 	res.render('index', context);
@@ -88,6 +91,7 @@ router.get('/friends', ensureAuthenticated, function(req, res){
 								requestedFriendsList: newRequestedFriendsList,
 								pendingFriendsList: newPendingFriendsList,
 								acceptedFriendsList: newAcceptedFriendsList,
+								amnt_friends: acceptedFriendsList.length,
 							}
 							
 							res.render('friends', context);
@@ -149,7 +153,11 @@ router.get('/user_result', function(req, res){
 				last_name = user.last_name;
 				profile_pic = user.profile_pic;
 				bio = user.bio;
-							
+				user_timeline = user.user_timeline;
+				
+				//This updated timeline has each post specified if user has liked it or not
+				var updated_timeline = Main.getLikedPostsInTimeline(user_timeline, req.user.liked_posts);
+				
 				var context = {
 					username: username,
 					first_name: first_name,
@@ -160,7 +168,8 @@ router.get('/user_result', function(req, res){
 					not_friend: true,
 					requested_friend: false,
 					pending_friend: false,
-					accepted_friend: false,				
+					accepted_friend: false,
+					user_timeline: updated_timeline,			
 				}
 							
 				for (var listNum = 0; listNum < friends.length; listNum ++){
@@ -249,11 +258,14 @@ router.post('/new_status', ensureAuthenticated, function(req, res){
 	var new_user_timeline = []
 		
 	var fullPost = {
-		id: user_timeline.length,
+		id: req.user.amnt_posts,
 		type: "status",
 		time: Main.getFormattedDate(),
 		from: req.user.username,
 		content: status,
+		likes: 0,
+		comments: [],
+		amnt_comments: 0,
 	}
 	
 	new_user_timeline.push(fullPost)
@@ -266,16 +278,64 @@ router.post('/new_status', ensureAuthenticated, function(req, res){
 		if (err) throw err;
 	});
 	
+	User.update({username: req.user.username}, {amnt_posts: req.user.amnt_posts + 1}, function(err, result){
+		if (err) throw err;
+	});
+	
 	var context = {};
 	
 	res.redirect('/');
+})
+
+router.post('/like_post', ensureAuthenticated, function(req, res){
+	var from = req.body.from;
+	var postID = req.body.postID;
+	var liked_posts = req.user.liked_posts;
+		
+	User.getUserByUsername(from, function(err, user){
+		var user_timeline = user.user_timeline;
+		
+		var postLiked = false;
+		
+		for (var i = 0; i < user_timeline.length; i++){
+			if (user_timeline[i].id == postID){
+				if (liked_posts.length > 0){
+					for (var x = 0; x < liked_posts.length; x ++){
+						if (liked_posts[x].id == postID){
+							postLiked = true
+						}
+					}
+				}
+				break
+			}
+		}
+				
+		if (!postLiked){
+			user_timeline[i].likes ++;
+			User.update({username: req.user.username}, {$push:{liked_posts: user_timeline[i]}}, function(err, result){
+				if (err) throw err;
+			});
+		}else if (postLiked){
+			user_timeline[i].likes --;
+			User.update({username: req.user.username}, {$pull:{liked_posts: {id: user_timeline[i].id}}}, function(err, result){
+				if (err) throw err;
+			});
+		}
+		
+		
+		User.update({username: from}, {user_timeline: user_timeline}, function(err, result){
+			if (err) throw err;
+		});
+		
+		
+	})
 })
 
 router.post('/remove_post', ensureAuthenticated, function(req, res){
 	//This is because new values are stored at beginning of array so you have to find the opposite value of id
 	var postID = Number(req.body.postID)
 
-	//Removes friend request from both users
+	//Removes post from respective user's timeline
 	User.update({username: req.user.username}, {$pull:{user_timeline: { id: postID } } }, function(err, result){
 		if (err) throw err;
 	});	
@@ -348,7 +408,7 @@ router.post('/', ensureAuthenticated, function(req, res){
 		bio: bio,
 	}
 	
-	res.render('index', context)
+	res.redirect('/')
 });
 
 function ensureAuthenticated(req, res, next){

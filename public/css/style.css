@@ -102,3 +102,17 @@ body{
 .statusInput{
 	resize: none;
 }
+
+.post-comment{
+	width: 100%;
+}
+
+.post-icon{
+	font-size: 125%;
+	margin-right: 20px;
+}
+
+.post-icon:hover{
+    text-shadow: 0px 0px 2px #666;
+    cursor: pointer;
+}

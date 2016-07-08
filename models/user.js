@@ -52,6 +52,13 @@ var UserSchema = mongoose.Schema({
 	friend_timeline: {
 		type: [],
 	},
+	amnt_posts: {
+		type: Number,
+		default: 0,
+	},
+	liked_posts: {
+		type: [],
+	}
 	
 });
 

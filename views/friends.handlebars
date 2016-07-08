@@ -3,22 +3,25 @@
 		{{ amnt_pending }} Friend Requests
 	</h2>
 	{{#each requestedFriendsList}}
-		<a class = "friendsBlock" name = {{ this.username }}>
-			<div class="panel panel-default">
-				<div class="panel-body">
+		<div class="panel panel-primary">
+			<div class="panel-heading">	
+				<a class = "friendsBlock" name = {{ this.username }}>
 					<img class = "list_pic" name = {{ this.profile_pic }}></img>
-					<p class = "lead friendsName">{{ this.username }}</p>
+					<div class = "inline-block">
+						<h3 class="post-title-name panel-title">{{this.first_name}} {{this.last_name}}</h3>
+						<h3 class="post-title-username panel-title">{{this.username}}</h3>
+					</div>
 					<form class = "pull-right" method = "post" action = "fr_decline">
 						<input name = "user" type = "hidden" value = "{{ this.username }}">
-						<button type = "submit" class = "btn btn-danger"><i class="fa fa-times" aria-hidden="true"></i></button>
+						<button type = "submit" class = "btn btn-default"><i class="fa fa-times" aria-hidden="true"></i></button>
 					</form>
 					<form class = "acceptFR pull-right" method = "post" action = "fr_accept">
 						<input name = "user" type = "hidden" value = "{{ this.username }}">
-						<button type = "submit" class = "btn btn-success"><i class="fa fa-check" aria-hidden="true"></i></button>
+						<button type = "submit" class = "btn btn-default"><i class="fa fa-check" aria-hidden="true"></i></button>
 					</form>
-				</div>
+				</a>
 			</div>
-		</a>
+		</div>
 	{{/each}}
 {{/if}}
 {{#if pendingFriendsList}}
@@ -26,14 +29,17 @@
 		{{ amnt_pending }} Pending Friend Requests
 	</h2>
 	{{#each pendingFriendsList}}
-		<a class = "friendsBlock" name = {{ this.username }}>
-			<div class="panel panel-default">
-				<div class="panel-body">
-					<img class = "list_pic" name = {{ this.profile_pic }}></img>
-					<p class = "lead friendsName">{{ this.username }}</p>
+		<div class="panel panel-primary">
+			<div class="panel-heading">	
+				<a class = "friendsBlock" name = {{ this.username }}>
+						<img class = "list_pic" name = {{ this.profile_pic }}></img>
+				<div class = "inline-block">
+					<h3 class="post-title-name panel-title">{{this.first_name}} {{this.last_name}}</h3>
+					<h3 class="post-title-username panel-title">{{this.username}}</h3>
 				</div>
+				</a>
 			</div>
-		</a>
+		</div>
 	{{/each}}
 {{/if}}
 {{#if acceptedFriendsList}}
@@ -41,14 +47,17 @@
 		{{ amnt_friends }} Friends
 	</h2>
 	{{#each acceptedFriendsList}}
-		<a class = "friendsBlock" name = {{ this.username }}>
-			<div class="panel panel-default">
-				<div class="panel-body">
-					<img class = "list_pic" name = {{ this.profile_pic }}></img>
-					<p class = "lead friendsName">{{ this.username }}</p>
+		<div class="panel panel-primary">
+			<div class="panel-heading">	
+				<a class = "friendsBlock" name = {{ this.username }}>
+						<img class = "list_pic" name = {{ this.profile_pic }}></img>
+				<div class = "inline-block">
+					<h3 class="post-title-name panel-title">{{this.first_name}} {{this.last_name}}</h3>
+					<h3 class="post-title-username panel-title">{{this.username}}</h3>
 				</div>
+				</a>
 			</div>
-		</a>
+		</div>
 	{{/each}}
 {{/if}}
 <script>
