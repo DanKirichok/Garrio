@@ -3,10 +3,10 @@
 	{{#if not_friend}}
 		<form class = "inline-form pull-right" method = "post" action = "/processing">
 			<input name = "user" id = "usernameFR" type = "hidden">
-			<button type = "submit" class = "btn btn-primary pull-right">Send Friend Request</button>
+			<button type = "submit" class = "btn btn-primary pull-right" data-toggle="tooltip" data-placement = "left" title = "" data-original-title="Send Friend Request"><i class="fa fa-user-plus" aria-hidden="true"></i></button>
 		</form>
 	{{else if pending_friend}}
-		<button type = "submit" class = "btn btn-primary pull-right disabled">Friend Request Pending</button>
+		<button type = "submit" class = "btn btn-primary pull-right disabled" data-toggle="tooltip" data-placement = "left" title = "" data-original-title="Friend Request Pending"><i class="fa fa-user-plus" aria-hidden="true"></i></button>
 	{{else if requested_friend}}
 		<form class = "pull-right" method = "post" action = "fr_decline">
 			<input name = "user" type = "hidden" value = "{{ username }}">
@@ -19,7 +19,7 @@
 	{{else if accepted_friend}}
 		<div class="btn-group pull-right">
 			<a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-				Your Friend
+				<i class="friendProfileIcon fa fa-user" aria-hidden="true"></i>
 				<span class="caret"></span>
 			</a>
 			<ul class="dropdown-menu">
@@ -87,11 +87,30 @@
 					{{/if}}
 				</form>
 
+				<!--This is the comment section that drops down-->
 				<div id = "{{this.id}}" class = "comment-section collapse" aria-expanded = "true">
-					<form id = "commentForm" method = "post" action = "/post_comment">
+					{{#each this.comments}}
+						
+						<!-- Comment -->
+						<div class="media">
+							<a class="friendsBlock pull-left" name = {{this.from}}>
+								<img class="list_pic" name = {{ this.profile_pic }}>
+							</a>
+							<div class="media-body">
+								<h3 class="post-comment-username panel-title">{{this.from}}</h3>
+								{{this.content}}
+								<h3 class="post-comment-date panel-title">{{this.date}}</h3>
+							</div>
+						</div>
+					
+					{{/each}}
+					<form id = "{{this.id}}_{{../username}}_form" method = "post" action = "/post_comment">
 						<div class="post-comment text-center input-group">
-							<input placeholder = "Post a comment!" class = "form-control custom-control statusInput" name = "post_comment" type = "text">
-							<span onClick = "document.getElementById('commentForm').submit()" class = "statusSubmit input-group-addon btn btn-primary" type = "submit">
+							<input placeholder = "Post a comment!" id = "{{this.id}}_{{../username}}_commentContent" class = "form-control custom-control statusInput" name = "post_content" type = "text">
+							<input id = "{{this.id}}_{{../username}}_commentFrom" type = "hidden" value = "{{../username}}" name = "from">
+							<input id = "{{this.id}}_{{../username}}_postFrom" type = "hidden" value = "{{this.from}}" name = "from">
+							<input id = "{{this.id}}_{{../username}}_postID" type = "hidden" value = "{{this.id}}" name = "from">
+							<span id = "{{this.id}}_{{../username}}" class = "commentSubmit input-group-addon btn btn-primary">
 								<i class="fa fa-paper-plane" aria-hidden="true"></i>
 							</span>
 						</div>
@@ -108,7 +127,11 @@
 	listProfilePics();
 	listHrefs();
 	sendUsernameFR("{{ username }}");
-
+	
+	$(document).ready(function() {
+		$("body").tooltip({ selector: '[data-toggle=tooltip]' });
+	});
+	
 	$(".submitLikedPost").click(function(){
 		var btnId = "#" + this.id;
 		var formId = "#" + this.id + "_form";
@@ -128,4 +151,18 @@
 			$(labelId).text(Number($(labelId).text()) + 1)
 		}
 	})
+	
+	$(".commentSubmit").click(function(){	
+		var btnId = "#" + this.id;
+		var formId = "#" + this.id + "_form";
+		var labelId = "#" + this.id + "_label";
+				
+		$.post('/post_comment',{
+			commentFrom: $(btnId + "_commentFrom").val(),
+			content: $(btnId + "_commentContent").val(),
+			date: getFormattedDate(),
+			postFrom: $(btnId + "_postFrom").val(),
+			postID: $(btnId + "_postID").val(),
+		})
+	});
 </script>

@@ -94,6 +94,15 @@ body{
 	margin-left: 20px;
 }
 
+.post-comment-username{
+	font-weight: bold;
+}
+
+.post-comment-date{
+	font-size: 85% !important;
+	opacity: .6;
+}
+
 .post-title-date{
 	display: inline-block;
 	vertical-align: middle;
@@ -115,4 +124,8 @@ body{
 .post-icon:hover{
     text-shadow: 0px 0px 2px #666;
     cursor: pointer;
+}
+
+.friendProfileIcon{
+	margin-right: 10px;
 }

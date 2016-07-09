@@ -4,21 +4,61 @@ var router = express.Router();
 var User = require('../models/user');
 var Main = require('../public/js/main')
 
+/*
+ * This gets all comment poster's profile pic and
+ * attatches it to each comment in the given timeline
+*/
+function putProfilePicsIntoComments(timeline, callback){
+	//This is also a big jumbled mess but I didn't know how else to do it
+	var updated_timeline = timeline;
+	
+	var commentIds = []	
+	
+	//This loop cycles through all comments and attatches each comment poster's profile pic to the comment
+	for (var post = 0; post < updated_timeline.length; post ++){
+		for (var comment = 0; comment < updated_timeline[post].comments.length; comment ++){
+			commentIds.push(updated_timeline[post].comments[comment].id);
+			
+			var totalComments = commentIds.length;
+			//console.log("BEFORE finding user: " + totalComments)
+			User.getUserByUsername(updated_timeline[post].comments[comment].from, function(err, user){
+				//console.log("AFTER finding user: " + totalComments)
+				for (var newPost = 0; newPost < updated_timeline.length; newPost ++){
+					for (var newComment = 0; newComment < updated_timeline[newPost].comments.length; newComment ++){
+						if (commentIds[0] == updated_timeline[newPost].comments[newComment].id){
+							updated_timeline[newPost].comments[newComment].profile_pic = user.profile_pic
+							commentIds.shift()
+							totalComments = commentIds.length;
+							//console.log("Removed comment ID: " + totalComments)
+							if (totalComments == 0){
+								//console.log("Sending timeline");
+								callback(updated_timeline);
+							}
+						}
+					}
+				}
+			})
+		}
+	}
+}
+
 //Home page
 router.get('/', ensureAuthenticated, function(req, res){
 	//This updated timeline has each post specified if user has liked it or not
-	var updated_timeline = Main.getLikedPostsInTimeline(req.user.user_timeline, req.user.liked_posts);
-		
-	var context = {
-		first_name: req.user.first_name,
-		last_name: req.user.last_name,
-		username: req.user.username,
-		profile_pic: req.user.profile_pic,
-		bio: req.user.bio,
-		user_timeline: updated_timeline,
-	}
+	var updated_timeline = Main.getLikedPostsInTimeline(req.user.user_timeline, req.user.liked_posts);	
 	
-	res.render('index', context);
+	putProfilePicsIntoComments(updated_timeline, function(user_timeline){
+		var context = {
+			first_name: req.user.first_name,
+			last_name: req.user.last_name,
+			username: req.user.username,
+			profile_pic: req.user.profile_pic,
+			bio: req.user.bio,
+			user_timeline: user_timeline,
+		}
+
+		res.render('index', context);
+	});
 });
 
 //Friends Page
@@ -158,37 +198,38 @@ router.get('/user_result', function(req, res){
 				//This updated timeline has each post specified if user has liked it or not
 				var updated_timeline = Main.getLikedPostsInTimeline(user_timeline, req.user.liked_posts);
 				
-				var context = {
-					username: username,
-					first_name: first_name,
-					last_name: last_name,
-					username: username,
-					profile_pic: profile_pic,
-					bio: bio,
-					not_friend: true,
-					requested_friend: false,
-					pending_friend: false,
-					accepted_friend: false,
-					user_timeline: updated_timeline,			
-				}
-							
-				for (var listNum = 0; listNum < friends.length; listNum ++){
-					for (var userNum = 0; userNum < friends[listNum].length; userNum ++){
-						if (friends[listNum][userNum] == username){
-							context.not_friend = false;
-							
-							if (listNum == 0){
-								context.requested_friend = true;
-							}else if (listNum == 1){
-								context.pending_friend = true;
-							}else if (listNum == 2){
-								context.accepted_friend = true;
+				putProfilePicsIntoComments(updated_timeline, function(user_timeline){
+					var context = {
+						username: username,
+						first_name: first_name,
+						last_name: last_name,
+						username: username,
+						profile_pic: profile_pic,
+						bio: bio,
+						not_friend: true,
+						requested_friend: false,
+						pending_friend: false,
+						accepted_friend: false,
+						user_timeline: updated_timeline,			
+					}
+								
+					for (var listNum = 0; listNum < friends.length; listNum ++){
+						for (var userNum = 0; userNum < friends[listNum].length; userNum ++){
+							if (friends[listNum][userNum] == username){
+								context.not_friend = false;
+								
+								if (listNum == 0){
+									context.requested_friend = true;
+								}else if (listNum == 1){
+									context.pending_friend = true;
+								}else if (listNum == 2){
+									context.accepted_friend = true;
+								}
 							}
 						}
 					}
-				}
-							
-				res.render('user_result', context)
+					res.render('user_result', context)
+				})
 			}else{
 				req.flash('error_msg', username + ' was not found.');
 				res.redirect('/');
@@ -287,18 +328,43 @@ router.post('/new_status', ensureAuthenticated, function(req, res){
 	res.redirect('/');
 })
 
+router.post('/post_comment', ensureAuthenticated, function(req, res){
+	var datePosted = req.body.date;
+	var content = req.body.content;
+	var commentFrom = req.body.commentFrom;
+	var postFrom = req.body.postFrom;
+	var postID = req.body.postID;
+	
+	var commentID = Main.getRandomInt(1, 10000000);
+	
+	var comment = {date: datePosted, content: content, from: commentFrom, id: commentID}
+	
+	User.getUserByUsername(postFrom, function(err, user){
+		var user_timeline = user.user_timeline;
+		
+		for (var i = 0; i < user_timeline.length; i++){
+			if (user_timeline[i].id == postID){
+				user_timeline[i].comments.push(comment);				
+				break
+			}
+		}
+		
+		User.update({username: user.username}, {user_timeline: user_timeline}, function(err, result){
+			if (err) throw err;
+		});
+	});
+})
+
 router.post('/like_post', ensureAuthenticated, function(req, res){
 	var from = req.body.from;
 	var postID = req.body.postID;
 	var liked_posts = req.user.liked_posts;
-		
+	console.log(req.body)
 	User.getUserByUsername(from, function(err, user){
 		var user_timeline = user.user_timeline;
 		
 		var postLiked = false;
-		
-		console.log(user.username);
-		
+				
 		for (var i = 0; i < user_timeline.length; i++){
 			if (user_timeline[i].id == postID){
 				if (liked_posts.length > 0){

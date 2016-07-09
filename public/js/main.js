@@ -49,6 +49,46 @@ function selectActiveWindow(){
 	}
 }
 
+//This is to get the formatted date for use in views pages
+function getFormattedDate(){
+	var date = new Date();
+	
+	var months = [
+		"Jan",
+		"Feb",
+		"Mar",
+		"Apr",
+		"May",
+		"Jun",
+		"Jul",
+		"Aug",
+		"Sep",
+		"Oct",
+		"Nov",
+		"Dec",
+	]
+	
+	var month = months[date.getMonth()];
+	var day = date.getDate();
+	var year = date.getFullYear();
+	
+	var hours = date.getHours();
+	var minutes = date.getMinutes();
+	var hour = hours % 12 || 12;
+	var suffix = "AM"
+
+	if (hours > 11){
+		suffix = "PM"
+	}
+			
+	if (minutes.toString().length == 1){
+		minutes = "0" + minutes.toString()
+	}
+
+	var formattedDate = hour + ":" + minutes + " " + suffix + " " + month + " " + day + " " + year
+	return formattedDate
+}
+
 //This function is used in the server side of the program
 module.exports = {
 	getFormattedDate: function(){
@@ -109,6 +149,10 @@ module.exports = {
 			}
 		}		
 		return timeline;
-	}
+	},
+	
+	getRandomInt: function(min, max){
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	},
 	
 }
