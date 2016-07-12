@@ -18,12 +18,16 @@ router.get('/login', function(req, res){
 	res.render('login');
 });
 
+router.get('/welcome', function(req, res){
+	res.render('welcome', {layout: "welcome"})
+});
+
 //Register
 router.post('/register', function(req, res){	
 	var first_name = req.body.first_name;
 	var last_name = req.body.last_name;
-	var email = req.body.email;
-	var username = req.body.username;
+	var email = req.body.email.toLowerCase();;
+	var username = req.body.username.toLowerCase();
 	var password = req.body.password;
 	var password2 = req.body.password2;
 	

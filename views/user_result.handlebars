@@ -31,7 +31,7 @@
 		</div>
 	{{/if}}
 </h3>
-<div class = "col-md-3 organizer">
+<div class = "col-md-3 text-center organizer">
 	<div>
 		<img class = "profile_pic" src = ""></img>
 	</div>
@@ -48,9 +48,6 @@
 	</div>
 </div>
 <div class = "organizer col-md-9">
-	<h3 class =  "page-header">
-		Timeline
-	</h3>
 	{{#each user_timeline}}
 		<div class="panel panel-primary">
 				<div class="panel-heading">
@@ -67,43 +64,52 @@
 				{{ this.content }}
 			</div>
 			 <div class="panel-footer">
-				{{this.amnt_comments}}
-				<span class = "post-icon toggle-dropdown" data-target = "#{{this.id}}" data-toggle="collapse" aria-expanded="false" aria-haspopup="true">
-					<i class="fa fa-comment" aria-hidden="true"></i>
-				</span>
+				<!--This is comment button that triggers comment section to drop down-->
+				<button id = "{{this.from}}_{{this.id}}_commentsTrigger" class = "inline-form invisible-button toggle-dropdown" data-target = "#{{this.from}}_{{this.id}}_commentsBlock" data-toggle="collapse" aria-expanded="false" aria-haspopup="true">
+					<label id = "{{this.id}}_{{this.from}}_label">{{this.amnt_comments}}</label>
+					<span class = "post-icon">
+						<i class="fa fa-comment" aria-hidden="true"></i>
+					</span>
+				</button>
+								
+				<!--This is the like button-->
 				<form class = "inline-form" id = "{{this.from}}_{{this.id}}_form" method = "post" action = "/like_post">
 					<input id = "{{this.from}}_{{this.id}}_likePostID" type = "hidden" value = "{{this.id}}" name = "postID">
 					<input id = "{{this.from}}_{{this.id}}_likePostFrom" type = "hidden" value = "{{this.from}}" name = "postFrom">
 					<label value = "{{this.likes}}" id = "{{this.from}}_{{this.id}}_label">{{this.likes}}</label>
 					<script></script>
 					{{#if this.[liked]}}
-						<span id = "{{this.from}}_{{this.id}}" class = "submitLikedPost post-icon toggle-dropdown">
+						<span id = "{{this.from}}_{{this.id}}" class = "submitLikedPost post-icon toggle-dropdown" data-toggle="tooltip" data-placement = "top" title = "" data-original-title="Unlike">
 							<i id = "{{this.from}}_{{this.id}}_likeIcon" class = "fa fa-thumbs-up liked"  aria-hidden="true"></i>
 						</span>
 					{{else}}
 						<span id = "{{this.from}}_{{this.id}}" class = "submitLikedPost post-icon toggle-dropdown">
-							<i id = "{{this.from}}_{{this.id}}_likeIcon" class = "fa fa-thumbs-o-up"  aria-hidden="true"></i>
+							<i id = "{{this.from}}_{{this.id}}_likeIcon" class = "fa fa-thumbs-o-up"  aria-hidden="true" data-toggle="tooltip" data-placement = "top" title = "" data-original-title="Like"></i>
 						</span>
 					{{/if}}
 				</form>
 
 				<!--This is the comment section that drops down-->
-				<div id = "{{this.id}}" class = "comment-section collapse" aria-expanded = "true">
-					{{#each this.comments}}
-						
-						<!-- Comment -->
-						<div class="media">
-							<a class="friendsBlock pull-left" name = {{this.from}}>
-								<img class="list_pic" name = {{ this.profile_pic }}>
-							</a>
-							<div class="media-body">
-								<h3 class="post-comment-username panel-title">{{this.from}}</h3>
-								{{this.content}}
-								<h3 class="post-comment-date panel-title">{{this.date}}</h3>
+				<div id = "{{this.from}}_{{this.id}}_commentsBlock" class = "comment-section collapse" aria-expanded = "true">
+					<div id = "{{this.id}}_{{../username}}_comments" class = "post-comments">
+						{{#each this.comments}}
+							
+							<!-- Comment -->
+							<div class="media">
+								<a class="friendsBlock pull-left" name = {{this.from}}>
+									<img class="list_pic" name = {{ this.profile_pic }}>
+								</a>
+								<div class="media-body">
+									<h3 class="post-comment-username panel-title">{{this.from}}</h3>
+									{{this.content}}
+									<h3 class="post-comment-date panel-title">{{this.date}}</h3>
+								</div>
 							</div>
-						</div>
+						
+						{{/each}}
+					</div>
 					
-					{{/each}}
+					<!--Comment input area-->
 					<form id = "{{this.id}}_{{../username}}_form" method = "post" action = "/post_comment">
 						<div class="post-comment text-center input-group">
 							<input placeholder = "Post a comment!" id = "{{this.id}}_{{../username}}_commentContent" class = "form-control custom-control statusInput" name = "post_content" type = "text">
@@ -156,13 +162,18 @@
 		var btnId = "#" + this.id;
 		var formId = "#" + this.id + "_form";
 		var labelId = "#" + this.id + "_label";
+		var commentsId = "#" + this.id + "_comments"
 				
-		$.post('/post_comment',{
-			commentFrom: $(btnId + "_commentFrom").val(),
-			content: $(btnId + "_commentContent").val(),
-			date: getFormattedDate(),
-			postFrom: $(btnId + "_postFrom").val(),
-			postID: $(btnId + "_postID").val(),
-		})
+		$(commentsId)[0].scrollTop = $(commentsId)[0].scrollHeight;
+		if ($(btnId + "_commentContent").val().trim() != 0){			
+			$.post('/post_comment',{
+				commentFrom: $(btnId + "_commentFrom").val(),
+				content: $(btnId + "_commentContent").val().trim(),
+				date: getFormattedDate(),
+				postFrom: $(btnId + "_postFrom").val(),
+				postID: $(btnId + "_postID").val(),
+			})
+			$(btnId + "_commentContent").val("");
+		}
 	});
 </script>

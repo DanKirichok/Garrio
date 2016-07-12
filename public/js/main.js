@@ -49,6 +49,10 @@ function selectActiveWindow(){
 	}
 }
 
+function isTouchDevice(){
+    return true == ("ontouchstart" in window || window.DocumentTouch && document instanceof DocumentTouch);
+}
+
 //This is to get the formatted date for use in views pages
 function getFormattedDate(){
 	var date = new Date();

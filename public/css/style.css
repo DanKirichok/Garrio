@@ -1,5 +1,10 @@
+@font-face {
+    font-family: kilogram;
+    src: url("../fonts/above.ttf");
+}
+
 body{
-	background-color: 
+	background-color: #F6F6F6 !important;
 }
 
 .profile_pic{
@@ -128,4 +133,86 @@ body{
 
 .friendProfileIcon{
 	margin-right: 10px;
+}
+
+.post-comments{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	max-height: 200px;
+	overflow: auto;
+}
+
+.invisible-button{
+	background: transparent;
+	border: none !important;
+}
+
+#statusForm{
+	margin-bottom: 15px;
+}
+
+#myCarousel{
+	position: absolute !important;
+	height: 100%;
+	width: 100%;
+}
+
+.item{
+	position: fixed !important;
+	height: 100%;
+	width: 100%;
+	background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.car-image{
+	min-height: 100% !important;
+	width: auto !important;
+}
+
+.car-control{
+	position: fixed !important;
+	height: 100%;
+}
+
+#welcome-pic1{
+	background-image: url("../background_imgs/frog.jpg");
+}
+
+#welcome-pic2{
+	background-image: url("../background_imgs/balloon.jpg");
+}
+
+#welcome-pic3{
+	background-image: url("../background_imgs/flower.jpg");
+}
+
+#welcome-dots{
+	position: fixed;
+	bottom: 10px;
+}
+
+.welcome-quote{
+	position: fixed;
+	display: inline-block;
+	font-family: kilogram;
+	top: 10%;
+	left: 15%;
+	width: 70%;
+	text-align: center;
+	color: white;
+}
+
+.website-title{
+	font-family: kilogram;
+	font-size: 250% !important;
+}
+
+.joinBtn{
+	position: fixed;
+	bottom: 10%;
+	width: 20%;
+	left: 40%;
+	z-index: 2;
 }

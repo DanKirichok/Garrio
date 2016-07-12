@@ -12,33 +12,39 @@ function putProfilePicsIntoComments(timeline, callback){
 	//This is also a big jumbled mess but I didn't know how else to do it
 	var updated_timeline = timeline;
 	
-	var commentIds = []	
-	
-	//This loop cycles through all comments and attatches each comment poster's profile pic to the comment
-	for (var post = 0; post < updated_timeline.length; post ++){
-		for (var comment = 0; comment < updated_timeline[post].comments.length; comment ++){
-			commentIds.push(updated_timeline[post].comments[comment].id);
-			
-			var totalComments = commentIds.length;
-			//console.log("BEFORE finding user: " + totalComments)
-			User.getUserByUsername(updated_timeline[post].comments[comment].from, function(err, user){
-				//console.log("AFTER finding user: " + totalComments)
-				for (var newPost = 0; newPost < updated_timeline.length; newPost ++){
-					for (var newComment = 0; newComment < updated_timeline[newPost].comments.length; newComment ++){
-						if (commentIds[0] == updated_timeline[newPost].comments[newComment].id){
-							updated_timeline[newPost].comments[newComment].profile_pic = user.profile_pic
-							commentIds.shift()
-							totalComments = commentIds.length;
-							//console.log("Removed comment ID: " + totalComments)
-							if (totalComments == 0){
-								//console.log("Sending timeline");
-								callback(updated_timeline);
+	var commentIds = [];
+	if (updated_timeline.length > 0){
+		//This loop cycles through all comments and attatches each comment poster's profile pic to the comment
+		for (var post = 0; post < updated_timeline.length; post ++){
+			if (updated_timeline[post].comments.length > 0){
+				for (var comment = 0; comment < updated_timeline[post].comments.length; comment ++){
+					commentIds.push(updated_timeline[post].comments[comment].id);
+					var totalComments = commentIds.length;
+					User.getUserByUsername(updated_timeline[post].comments[comment].from, function(err, user){				
+						for (var newPost = 0; newPost < updated_timeline.length; newPost ++){
+							for (var newComment = 0; newComment < updated_timeline[newPost].comments.length; newComment ++){
+								if (commentIds[0] == updated_timeline[newPost].comments[newComment].id){
+									user.profile_pic
+									updated_timeline[newPost].comments[newComment].profile_pic = user.profile_pic;
+									commentIds.shift()
+									totalComments = commentIds.length;
+									if (totalComments == 0){
+										callback(updated_timeline);
+									}
+									break
+								}
 							}
 						}
-					}
+					})
 				}
-			})
+			}else{
+				if (post == updated_timeline.length - 1){
+					callback(updated_timeline);
+				}
+			}
 		}
+	}else{
+		callback(updated_timeline);
 	}
 }
 
@@ -46,7 +52,7 @@ function putProfilePicsIntoComments(timeline, callback){
 router.get('/', ensureAuthenticated, function(req, res){
 	//This updated timeline has each post specified if user has liked it or not
 	var updated_timeline = Main.getLikedPostsInTimeline(req.user.user_timeline, req.user.liked_posts);	
-	
+		
 	putProfilePicsIntoComments(updated_timeline, function(user_timeline){
 		var context = {
 			first_name: req.user.first_name,
@@ -169,7 +175,10 @@ router.get('/messages', ensureAuthenticated, function(req, res){
 });
 
 router.get('/user_result', function(req, res){
-	var username = req.query['username']	
+	var username = req.query['username']
+	if (username != null){
+		username = username.toLowerCase();
+	}
 	var first_name;
 	var last_name;
 	var profile_pic;
@@ -183,7 +192,6 @@ router.get('/user_result', function(req, res){
 	var friends = [requestedFriendsList, pendingFriendsList, acceptedFriendsList];			
 	
 	if (username == req.user.username){
-		req.flash('error_msg', 'Your profile is right here you silly goose!');
 		res.redirect('/');
 	}else{		
 		User.getUserByUsername(username, function(err, user){
@@ -331,10 +339,11 @@ router.post('/new_status', ensureAuthenticated, function(req, res){
 router.post('/post_comment', ensureAuthenticated, function(req, res){
 	var datePosted = req.body.date;
 	var content = req.body.content;
-	var commentFrom = req.body.commentFrom;
+	var commentFrom = req.user.username;
 	var postFrom = req.body.postFrom;
 	var postID = req.body.postID;
 	
+	//Each comment has a unique comment id
 	var commentID = Main.getRandomInt(1, 10000000);
 	
 	var comment = {date: datePosted, content: content, from: commentFrom, id: commentID}
@@ -344,7 +353,8 @@ router.post('/post_comment', ensureAuthenticated, function(req, res){
 		
 		for (var i = 0; i < user_timeline.length; i++){
 			if (user_timeline[i].id == postID){
-				user_timeline[i].comments.push(comment);				
+				user_timeline[i].comments.push(comment);
+				user_timeline[i].amnt_comments ++;		
 				break
 			}
 		}
@@ -359,7 +369,6 @@ router.post('/like_post', ensureAuthenticated, function(req, res){
 	var from = req.body.from;
 	var postID = req.body.postID;
 	var liked_posts = req.user.liked_posts;
-	console.log(req.body)
 	User.getUserByUsername(from, function(err, user){
 		var user_timeline = user.user_timeline;
 		
@@ -483,7 +492,7 @@ function ensureAuthenticated(req, res, next){
 	if(req.isAuthenticated()){
 		return next();
 	}else{
-		res.redirect('/users/login');
+		res.redirect('/users/welcome');
 	}
 }
 
