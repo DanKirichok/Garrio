@@ -148,18 +148,27 @@
 		var formId = "#" + this.id + "_form";
 		var labelId = "#" + this.id + "_label";
 		var commentsId = "#" + this.id + "_comments"
-				
-		$(commentsId)[0].scrollTop = $(commentsId)[0].scrollHeight;
+		
+		var commentContent = $(btnId + "_commentContent").val().trim();
+		var commentDate = getFormattedDate();
+		
 		if ($(btnId + "_commentContent").val().trim() != 0){			
 			$.post('/post_comment',{
 				commentFrom: $(btnId + "_commentFrom").val(),
-				content: $(btnId + "_commentContent").val().trim(),
-				date: getFormattedDate(),
+				content: commentContent,
+				date: commentDate,
 				postFrom: $(btnId + "_postFrom").val(),
 				postID: $(btnId + "_postID").val(),
 			})
 			$(btnId + "_commentContent").val("");
 			$(labelId).text(Number($(labelId).text()) + 1);
+			
+			$(commentsId).append('<div class="comment media"><a class="friendsBlock pull-left" name = {{ username }}><img class="list_pic" name = {{ profile_pic }}></a><div class="media-body"><h3 class="post-comment-username panel-title">{{ username }}</h3>' + commentContent + '<h3 class="post-comment-date panel-title">' + commentDate + '</h3></div></div>')
+			
+			listProfilePics();
+			listHrefs();
 		}
+		
+		$(commentsId)[0].scrollTop = $(commentsId)[0].scrollHeight;
 	});
 </script>
