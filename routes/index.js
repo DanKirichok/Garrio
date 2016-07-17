@@ -218,9 +218,11 @@ router.get('/user_result', function(req, res){
 						requested_friend: false,
 						pending_friend: false,
 						accepted_friend: false,
-						user_timeline: updated_timeline,			
+						user_timeline: updated_timeline,
+						req_username: req.user.username,
+						req_profile_pic: req.user.profile_pic,		
 					}
-								
+													
 					for (var listNum = 0; listNum < friends.length; listNum ++){
 						for (var userNum = 0; userNum < friends[listNum].length; userNum ++){
 							if (friends[listNum][userNum] == username){

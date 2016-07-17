@@ -209,10 +209,17 @@ body{
 	font-size: 250% !important;
 }
 
-.joinBtn{
+.welcomeBtn{
+	margin-left: 50px;
+	margin-top: 10px;
+	margin-right: 50px;
+}
+
+.joinBtnContainer{
 	position: fixed;
+	left: 0%;
+	width: 100%;
 	bottom: 10%;
-	width: 20%;
-	left: 40%;
 	z-index: 2;
+	text-align: center;
 }

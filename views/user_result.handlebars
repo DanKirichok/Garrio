@@ -127,53 +127,14 @@
 	{{/each}}
 </div>
 
-
 <script>
-	getProfilePic("{{ profile_pic }}");
-	listProfilePics();
-	listHrefs();
+	//These variables are set so they can be used in the people-page.js file
+	var hb_profile_pic = "{{ profile_pic }}";
+	var hb_req_username = "{{ req_username }}";
+	var hb_req_profile_pic = "{{ req_profile_pic }}";
+	
+	console.log(hb_req_profile_pic)
+	
 	sendUsernameFR("{{ username }}");
-	
-	$(document).ready(function() {
-		$("body").tooltip({ selector: '[data-toggle=tooltip]' });
-	});
-	
-	$(".submitLikedPost").click(function(){
-		var btnId = "#" + this.id;
-		var formId = "#" + this.id + "_form";
-		var iconId = "#" + this.id + "_likeIcon";
-		var labelId = "#" + this.id + "_label";
-		
-		$.post('/like_post',{
-			postID: $(btnId + "_likePostID").val(),
-			from: $(btnId + "_likePostFrom").val(),
-		})
-				
-		if ($(iconId).attr('class').indexOf("liked") >= 0){
-			$(iconId).attr('class', 'fa fa-thumbs-o-up');
-			$(labelId).text(Number($(labelId).text()) - 1)
-		}else{
-			$(iconId).attr('class', "fa fa-thumbs-up liked")
-			$(labelId).text(Number($(labelId).text()) + 1)
-		}
-	})
-	
-	$(".commentSubmit").click(function(){	
-		var btnId = "#" + this.id;
-		var formId = "#" + this.id + "_form";
-		var labelId = "#" + this.id + "_label";
-		var commentsId = "#" + this.id + "_comments"
-				
-		$(commentsId)[0].scrollTop = $(commentsId)[0].scrollHeight;
-		if ($(btnId + "_commentContent").val().trim() != 0){			
-			$.post('/post_comment',{
-				commentFrom: $(btnId + "_commentFrom").val(),
-				content: $(btnId + "_commentContent").val().trim(),
-				date: getFormattedDate(),
-				postFrom: $(btnId + "_postFrom").val(),
-				postID: $(btnId + "_postID").val(),
-			})
-			$(btnId + "_commentContent").val("");
-		}
-	});
 </script>
+<script src = "/js/people-page.js"></script>
