@@ -55,7 +55,7 @@
 						<img class = "list_pic" name = {{../profile_pic}}></img>
 							
 						<div class = "inline-block">
-							<h3 class="post-title-name panel-title">{{../first_name}} {{../last_name}}</h3>
+							<h3 class="post-title-name panel-title">{{ this.from }}</h3>
 							<h3 class="post-title-username panel-title">{{ this.time }}</h3>
 						</div>
 					</a>
@@ -132,9 +132,7 @@
 	var hb_profile_pic = "{{ profile_pic }}";
 	var hb_req_username = "{{ req_username }}";
 	var hb_req_profile_pic = "{{ req_profile_pic }}";
-	
-	console.log(hb_req_profile_pic)
-	
+		
 	sendUsernameFR("{{ username }}");
 </script>
 <script src = "/js/people-page.js"></script>

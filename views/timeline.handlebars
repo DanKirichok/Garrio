@@ -1,0 +1,84 @@
+{{#each timeline}}
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<a class = "friendsBlock" name = {{ this.from }}>
+				<img class = "list_pic" name = {{this.profile_pic}}></img>
+					
+				<div class = "inline-block">
+					<h3 class="post-title-name panel-title">{{ this.from }}</h3>
+					<h3 class="post-title-username panel-title">{{ this.time }}</h3>
+				</div>
+			</a>
+		</div>
+		<div class="panel-body">
+			{{ this.content }}
+		</div>
+		<div class="panel-footer">
+			<!--This is comment button that triggers comment section to drop down-->
+			<button id = "{{this.from}}_{{this.id}}_commentsTrigger" class = "inline-form invisible-button toggle-dropdown" data-target = "#{{this.from}}_{{this.id}}_commentsBlock" data-toggle="collapse" aria-expanded="false" aria-haspopup="true">
+				<label id = "{{this.id}}_{{this.from}}_label">{{this.amnt_comments}}</label>
+				<span class = "post-icon">
+					<i class="fa fa-comment" aria-hidden="true"></i>
+				</span>
+			</button>
+							
+			<!--This is the like button-->
+			<form class = "inline-form" id = "{{this.from}}_{{this.id}}_form" method = "post" action = "/like_post">
+				<input id = "{{this.from}}_{{this.id}}_likePostID" type = "hidden" value = "{{this.id}}" name = "postID">
+				<input id = "{{this.from}}_{{this.id}}_likePostFrom" type = "hidden" value = "{{this.from}}" name = "postFrom">
+				<label value = "{{this.likes}}" id = "{{this.from}}_{{this.id}}_label">{{this.likes}}</label>
+				<script></script>
+				{{#if this.[liked]}}
+					<span id = "{{this.from}}_{{this.id}}" class = "submitLikedPost post-icon toggle-dropdown" data-toggle="tooltip" data-placement = "top" title = "" data-original-title="Unlike">
+						<i id = "{{this.from}}_{{this.id}}_likeIcon" class = "fa fa-thumbs-up liked"  aria-hidden="true"></i>
+					</span>
+				{{else}}
+					<span id = "{{this.from}}_{{this.id}}" class = "submitLikedPost post-icon toggle-dropdown">
+						<i id = "{{this.from}}_{{this.id}}_likeIcon" class = "fa fa-thumbs-o-up"  aria-hidden="true" data-toggle="tooltip" data-placement = "top" title = "" data-original-title="Like"></i>
+					</span>
+				{{/if}}
+			</form>
+
+			<!--This is the comment section that drops down-->
+			<div id = "{{this.from}}_{{this.id}}_commentsBlock" class = "comment-section collapse" aria-expanded = "true">
+				<div id = "{{this.id}}_{{../username}}_comments" class = "post-comments">
+					{{#each this.comments}}
+						
+						<!-- Comment -->
+						<div class="media">
+							<a class="friendsBlock pull-left" name = {{this.from}}>
+								<img class="list_pic" name = {{ this.profile_pic }}>
+							</a>
+							<div class="media-body">
+								<h3 class="post-comment-username panel-title">{{this.from}}</h3>
+								{{this.content}}
+								<h3 class="post-comment-date panel-title">{{this.date}}</h3>
+							</div>
+						</div>
+					
+					{{/each}}
+				</div>
+				
+				<!--Comment input area-->
+				<form id = "{{this.id}}_{{../username}}_form" method = "post" action = "/post_comment">
+					<div class="post-comment text-center input-group">
+						<input placeholder = "Post a comment!" id = "{{this.id}}_{{../username}}_commentContent" class = "form-control custom-control statusInput" name = "post_content" type = "text">
+						<input id = "{{this.id}}_{{../username}}_commentFrom" type = "hidden" value = "{{../username}}" name = "from">
+						<input id = "{{this.id}}_{{../username}}_postFrom" type = "hidden" value = "{{this.from}}" name = "from">
+						<input id = "{{this.id}}_{{../username}}_postID" type = "hidden" value = "{{this.id}}" name = "from">
+						<span id = "{{this.id}}_{{../username}}" class = "commentSubmit input-group-addon btn btn-primary">
+							<i class="fa fa-paper-plane" aria-hidden="true"></i>
+						</span>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{{/each}}
+<script>
+//These variables are set so they can be used in the people-page.js file
+	var hb_profile_pic = "{{ profile_pic }}";
+	var hb_req_username = "{{ req_username }}";
+	var hb_req_profile_pic = "{{ req_profile_pic }}";
+</script>
+<script src = "/js/people-page.js"></script>

@@ -48,6 +48,43 @@ function putProfilePicsIntoComments(timeline, callback){
 	}
 }
 
+function putProfilePicsIntoPosts(timeline, callback){
+	//This is also a big jumbled mess but I didn't know how else to do it
+	var updated_timeline = timeline;
+	
+	var pics_inserted = 0;
+	
+	if (updated_timeline.length > 0){
+		for (var post = 0; post < updated_timeline.length; post ++){
+			User.getUserByUsername(updated_timeline[post].from, function(err, user){
+				if (pics_inserted < updated_timeline.length){
+					for (var newPost = 0; newPost < updated_timeline.length; newPost ++){
+						if (updated_timeline[newPost].from == user.username){
+							updated_timeline[newPost].profile_pic = user.profile_pic;
+							pics_inserted ++;
+							if (pics_inserted == updated_timeline.length){
+								break;
+							}
+						}
+					}
+					/*
+					console.log('')
+					console.log('pics_inserted: ' + pics_inserted);
+					console.log('updated_timeline.length: ' + updated_timeline.length);
+					*/
+					
+					//This should only be run once when the looping is all done above
+					if (pics_inserted == updated_timeline.length){
+						callback(updated_timeline)
+					}
+				}
+			})
+		}
+	}else{
+		callback(updated_timeline);
+	}
+}
+
 //Home page
 router.get('/', ensureAuthenticated, function(req, res){
 	//This updated timeline has each post specified if user has liked it or not
@@ -256,6 +293,55 @@ router.get('/edit_profile', ensureAuthenticated, function(req, res){
 	}
 	
 	res.render('edit_profile', context);
+});
+
+router.get('/timeline', ensureAuthenticated, function(req, res){
+	//This is where each accepted_friends timeline will go
+	var posts = [];
+	
+	var friends_sorted = 0;
+		
+	for (var friendUsername = 0; friendUsername < req.user.accepted_friends.length; friendUsername++){
+		var username = req.user.accepted_friends[friendUsername];
+		User.getUserByUsername(username, function(err, user){
+			var friendTimeline = user.user_timeline;
+			for (var timelineItem = 0; timelineItem < friendTimeline.length; timelineItem ++){
+				posts.push(friendTimeline[timelineItem]);
+			}
+			
+			//For debugging
+			/*
+			console.log("friends_sorted: " + friends_sorted);
+			console.log("req.user.accepted_friends.length: " + req.user.accepted_friends.length);
+			
+			console.log("timelineItem: " + timelineItem);
+			console.log("friendTimeline.length: " + friendTimeline.length);
+			*/
+			
+			if (friends_sorted == req.user.accepted_friends.length - 1 && timelineItem == friendTimeline.length){
+				//This function sorts all the posts based on time created from most recent to oldest
+				var sorted_posts = posts.sort(function(a, b) {
+					a = new Date(a.time);
+					b = new Date(b.time);
+					return a>b ? -1 : a<b ? 1 : 0;
+				})
+				
+				putProfilePicsIntoPosts(sorted_posts, function(posts){
+					putProfilePicsIntoComments(posts, function(finished_timeline){
+						var context = {
+							timeline: Main.getLikedPostsInTimeline(finished_timeline, req.user.liked_posts),
+							req_username: req.user.username,
+							req_profile_pic: req.user.profile_pic,
+						};
+		
+						res.render('timeline', context);
+					})
+				});
+			}
+			
+			friends_sorted ++; 
+		})
+	}
 });
 
 router.post('/fr_accept', ensureAuthenticated, function(req, res){

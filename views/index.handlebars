@@ -33,7 +33,7 @@
 					<img class = "list_pic" name = {{../profile_pic}}></img>
 						
 					<div class = "inline-block">
-						<h3 class="post-title-name panel-title">{{../first_name}} {{../last_name}}</h3>
+						<h3 class="post-title-name panel-title">{{ this.from }}</h3>
 						<h3 class="post-title-username panel-title">{{ this.time }}</h3>
 					</div>
 					<form class = "real-inline-form" method = "post" action = "/remove_post">
@@ -114,6 +114,8 @@
 	//These variables are set so they can be used in the people-page.js file
 	var hb_profile_pic = "{{ profile_pic }}";
 	var hb_req_username = "{{ username }}";
+	
+	//Only user sees this page so the user pic is also the req profile pic
 	var hb_req_profile_pic = "{{ profile_pic }}";
 </script>
 <script src = "/js/people-page.js"></script>
