@@ -12,10 +12,10 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 
 //Development Setting
-mongoose.connect('mongodb://localhost/socialNetwork');
+//mongoose.connect('mongodb://localhost/socialNetwork');
 
 //Connects to online db. Used for production
-/*
+
 mongoose.connect('mongodb://dan:daniscool123@ds017165.mlab.com:17165/garrio', function(err){
 	console.log("Connecting to mongoose...");
 	if (err){
@@ -23,7 +23,7 @@ mongoose.connect('mongodb://dan:daniscool123@ds017165.mlab.com:17165/garrio', fu
 		console.log(err)
 	};
 });
-*/
+
 
 var db = mongoose.connection;
 
@@ -114,13 +114,13 @@ app.use(function(req, res, next){
 
 //Development settings
 // Set Port
-app.set('port', (process.env.PORT || 4000));
+/*app.set('port', (process.env.PORT || 4000));
 
 app.listen(app.get('port'), function(){
 	console.log('Server started on port '+app.get('port'));
 });
+*/
 
-/*
 //This is for openshift
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
@@ -128,4 +128,4 @@ var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 app.listen(port, ipaddress, function(){
 	console.log('Using Production settings')
 })
-*/
+
