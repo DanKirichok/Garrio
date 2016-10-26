@@ -29,6 +29,20 @@ function updateProfilePic(profile_pic){
 	document.getElementsByName("profile_pic_selector")[0].selectedIndex = picNum - 1
 }
 
+function updateProfileColor(color){
+	//This handles the color picker on the edit profile page
+	$(".profile_color").spectrum({
+		color: color,
+		showPaletteOnly: true,
+		showPalette: true,
+		palette: [
+			['#777777', '#e0afb3', '#6161FF', '#008585', '#B60000', '#507AA4', '#9260C2'],
+		],
+		hideAfterPaletteSelect:true,
+	
+	});
+}
+
 function sendUsernameFR(username){
 	if (document.getElementById("usernameFR")){
 		document.getElementById("usernameFR").value = username;

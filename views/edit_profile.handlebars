@@ -2,7 +2,7 @@
 
 <form method = "post" action = "/">
 	<div class="form-group">
-		<label>Bio</label>
+		<label>Edit Bio</label>
 		<input id = "update_bio_text" type="text" class="form-control" name="bio">
 	</div>
 	<div class="form-group">
@@ -21,6 +21,14 @@
 		</select>
 	</div>
 	
+	<div class = "form-group">
+		<label>Change Profile Color</label>
+		<br>
+		<input type='text' name = "profile_color" class="profile_color"/>
+	</div>
+	
+	<div class = "footer-divider"></div>
+	
 	<a href = "/" class="btn btn-danger">Cancel</a>
 	<button type="submit" class="side-divide btn btn-primary">Save Changes</button>
 </form>
@@ -28,6 +36,7 @@
 <script>
 	updateBio("{{ bio }}");
 	updateProfilePic("{{ profile_pic }}");
+	updateProfileColor("{{ profile_color }}");
 	
 	//This activates cool looking image selector
 	$("select").imagepicker();

@@ -48,6 +48,7 @@ function putProfilePicsIntoComments(timeline, callback){
 	}
 }
 
+//This also puts profile_color into posts
 function putProfilePicsIntoPosts(timeline, callback){
 	//This is also a big jumbled mess but I didn't know how else to do it
 	var updated_timeline = timeline;
@@ -61,6 +62,7 @@ function putProfilePicsIntoPosts(timeline, callback){
 					for (var newPost = 0; newPost < updated_timeline.length; newPost ++){
 						if (updated_timeline[newPost].from == user.username){
 							updated_timeline[newPost].profile_pic = user.profile_pic;
+							updated_timeline[newPost].profile_color = user.profile_color;
 							pics_inserted ++;
 							if (pics_inserted == updated_timeline.length){
 								break;
@@ -98,6 +100,7 @@ router.get('/', ensureAuthenticated, function(req, res){
 			profile_pic: req.user.profile_pic,
 			bio: req.user.bio,
 			user_timeline: user_timeline,
+			profile_color: req.user.profile_color,
 		}
 
 		res.render('index', context);
@@ -220,6 +223,8 @@ router.get('/user_result', function(req, res){
 	var last_name;
 	var profile_pic;
 	var bio;
+	var user_timeline;
+	var profile_color;
 	
 	var requestedFriendsList = req.user.requested_friends;
 	var pendingFriendsList = req.user.pending_friends;
@@ -239,6 +244,7 @@ router.get('/user_result', function(req, res){
 				profile_pic = user.profile_pic;
 				bio = user.bio;
 				user_timeline = user.user_timeline;
+				profile_color = user.profile_color
 				
 				//This updated timeline has each post specified if user has liked it or not
 				var updated_timeline = Main.getLikedPostsInTimeline(user_timeline, req.user.liked_posts);
@@ -256,6 +262,7 @@ router.get('/user_result', function(req, res){
 						pending_friend: false,
 						accepted_friend: false,
 						user_timeline: updated_timeline,
+						profile_color: profile_color,
 						req_username: req.user.username,
 						req_profile_pic: req.user.profile_pic,		
 					}
@@ -290,6 +297,7 @@ router.get('/edit_profile', ensureAuthenticated, function(req, res){
 	var context = {
 		bio: req.user.bio,
 		profile_pic: req.user.profile_pic,
+		profile_color: req.user.profile_color,
 	}
 	
 	res.render('edit_profile', context);
@@ -300,47 +308,53 @@ router.get('/timeline', ensureAuthenticated, function(req, res){
 	var posts = [];
 	
 	var friends_sorted = 0;
-		
-	for (var friendUsername = 0; friendUsername < req.user.accepted_friends.length; friendUsername++){
-		var username = req.user.accepted_friends[friendUsername];
-		User.getUserByUsername(username, function(err, user){
-			var friendTimeline = user.user_timeline;
-			for (var timelineItem = 0; timelineItem < friendTimeline.length; timelineItem ++){
-				posts.push(friendTimeline[timelineItem]);
-			}
-			
-			//For debugging
-			/*
-			console.log("friends_sorted: " + friends_sorted);
-			console.log("req.user.accepted_friends.length: " + req.user.accepted_friends.length);
-			
-			console.log("timelineItem: " + timelineItem);
-			console.log("friendTimeline.length: " + friendTimeline.length);
-			*/
-			
-			if (friends_sorted == req.user.accepted_friends.length - 1 && timelineItem == friendTimeline.length){
-				//This function sorts all the posts based on time created from most recent to oldest
-				var sorted_posts = posts.sort(function(a, b) {
-					a = new Date(a.time);
-					b = new Date(b.time);
-					return a>b ? -1 : a<b ? 1 : 0;
-				})
+	if (req.user.accepted_friends.length > 0){
+		for (var friendUsername = 0; friendUsername < req.user.accepted_friends.length; friendUsername++){
+			var username = req.user.accepted_friends[friendUsername];
+			User.getUserByUsername(username, function(err, user){
+				var friendTimeline = user.user_timeline;
+				for (var timelineItem = 0; timelineItem < friendTimeline.length; timelineItem ++){
+					posts.push(friendTimeline[timelineItem]);
+				}
 				
-				putProfilePicsIntoPosts(sorted_posts, function(posts){
-					putProfilePicsIntoComments(posts, function(finished_timeline){
-						var context = {
-							timeline: Main.getLikedPostsInTimeline(finished_timeline, req.user.liked_posts),
-							req_username: req.user.username,
-							req_profile_pic: req.user.profile_pic,
-						};
-		
-						res.render('timeline', context);
+				//For debugging
+				/*
+				console.log("friends_sorted: " + friends_sorted);
+				console.log("req.user.accepted_friends.length: " + req.user.accepted_friends.length);
+				
+				console.log("timelineItem: " + timelineItem);
+				console.log("friendTimeline.length: " + friendTimeline.length);
+				*/
+				
+				if (friends_sorted == req.user.accepted_friends.length - 1 && timelineItem == friendTimeline.length){
+					//This function sorts all the posts based on time created from most recent to oldest
+					var sorted_posts = posts.sort(function(a, b) {
+						a = new Date(a.time);
+						b = new Date(b.time);
+						return a>b ? -1 : a<b ? 1 : 0;
 					})
-				});
-			}
+					
+					putProfilePicsIntoPosts(sorted_posts, function(posts){
+						putProfilePicsIntoComments(posts, function(finished_timeline){
+							var context = {
+								timeline: Main.getLikedPostsInTimeline(finished_timeline, req.user.liked_posts),
+								req_username: req.user.username,
+								req_profile_pic: req.user.profile_pic,
+							};
 			
-			friends_sorted ++; 
-		})
+							res.render('timeline', context);
+						})
+					});
+				}
+				
+				friends_sorted ++; 
+			})
+		}
+	}else{
+		var context = {
+			message: "It looks like your timeline is empty. Fill it up by adding friends."
+		};
+		res.render('timeline', context);
 	}
 });
 
@@ -554,6 +568,7 @@ router.post('/processing', ensureAuthenticated, function(req, res){
 router.post('/', ensureAuthenticated, function(req, res){
 	var bio = req.body.bio;
 	var profile_pic = req.body.profile_pic_selector;
+	var profile_color = req.body.profile_color;
 		
 	//This updates the bio of the user to what the user had input into the form
 	User.update({_id: req.user._id}, {$set:{bio: bio}}, function(err, result){
@@ -562,6 +577,11 @@ router.post('/', ensureAuthenticated, function(req, res){
 	
 	//This updates the profile of the user
 	User.update({_id: req.user._id}, {$set:{profile_pic: profile_pic}}, function(err, result){
+		if (err) throw err;
+	});
+	
+	//This updates the profile of the user
+	User.update({_id: req.user._id}, {$set:{profile_color: profile_color}}, function(err, result){
 		if (err) throw err;
 	});
 	

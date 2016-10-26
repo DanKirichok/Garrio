@@ -4,7 +4,7 @@
 	</h4>
 	{{#each requestedFriendsList}}
 		<div class="panel panel-primary">
-			<div class="panel-heading">	
+			<div class="panel-heading" name = "{{ this.profile_color }}">	
 				<a class = "friendsBlock" name = {{ this.username }}>
 					<img class = "list_pic" name = {{ this.profile_pic }}></img>
 					<div class = "inline-block">
@@ -30,7 +30,7 @@
 	</h4>
 	{{#each pendingFriendsList}}
 		<div class="panel panel-primary">
-			<div class="panel-heading">	
+			<div class="panel-heading" name = "{{ this.profile_color }}">	
 				<a class = "friendsBlock" name = {{ this.username }}>
 						<img class = "list_pic" name = {{ this.profile_pic }}></img>
 				<div class = "inline-block">
@@ -48,7 +48,7 @@
 	</h4>
 	{{#each acceptedFriendsList}}
 		<div class="panel panel-primary">
-			<div class="panel-heading">	
+			<div class="panel-heading" name = "{{ this.profile_color }}"> 	
 				<a class = "friendsBlock" name = {{ this.username }}>
 						<img class = "list_pic" name = {{ this.profile_pic }}></img>
 				<div class = "inline-block">
@@ -63,4 +63,9 @@
 <script>
 	listProfilePics();
 	listHrefs();
+	
+	$('.panel-heading').each(function(index){
+		console.log($(this).attr('name'))
+		$(this).css('background-color', $(this).attr('name'))
+	})
 </script>

@@ -58,6 +58,10 @@ var UserSchema = mongoose.Schema({
 	},
 	liked_posts: {
 		type: [],
+	},
+	profile_color: {
+		type: String,
+		default: '#777777'
 	}
 	
 });

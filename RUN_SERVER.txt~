@@ -1,4 +1,4 @@
 ./ngrok http <port on local machine>
 
-ex:
+EX:
 ./ngrok http 4000

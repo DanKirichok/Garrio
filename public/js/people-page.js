@@ -62,3 +62,8 @@ $(".commentSubmit").click(function(){
 	
 	$(commentsId)[0].scrollTop = $(commentsId)[0].scrollHeight;
 });
+
+$('.statusSubmit').click(function(){
+	console.log("POOP")
+	$('#statusForm').submit();
+})

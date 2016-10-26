@@ -31,7 +31,7 @@
 		</div>
 	{{/if}}
 </h3>
-<div class = "col-md-3 text-center organizer">
+<div class = "col-md-3 text-center organizer personInfo">
 	<div>
 		<img class = "profile_pic" src = ""></img>
 	</div>
@@ -134,5 +134,7 @@
 	var hb_req_profile_pic = "{{ req_profile_pic }}";
 		
 	sendUsernameFR("{{ username }}");
+	
+	$('.personInfo').css('background-color', '{{profile_color}}')
 </script>
 <script src = "/js/people-page.js"></script>

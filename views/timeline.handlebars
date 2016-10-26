@@ -1,6 +1,15 @@
+{{#if message}}
+	<blockquote>
+		<p>Wherever we are, it is our friends that make our world.</p>
+		<small>Henry Drummond</small>
+	</blockquote>
+	<div class = "emptyTimelineMsg text-center">
+		<h4>{{message}}</h4>
+	</div>
+{{/if}}
 {{#each timeline}}
 	<div class="panel panel-primary">
-		<div class="panel-heading">
+		<div class = "panel-heading" name = "{{this.profile_color}}">
 			<a class = "friendsBlock" name = {{ this.from }}>
 				<img class = "list_pic" name = {{this.profile_pic}}></img>
 					
@@ -80,5 +89,10 @@
 	var hb_profile_pic = "{{ profile_pic }}";
 	var hb_req_username = "{{ req_username }}";
 	var hb_req_profile_pic = "{{ req_profile_pic }}";
+	
+	$('.panel-heading').each(function(index){
+		console.log($(this).attr('name'))
+		$(this).css('background-color', $(this).attr('name'))
+	})
 </script>
 <script src = "/js/people-page.js"></script>
