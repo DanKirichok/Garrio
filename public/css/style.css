@@ -211,6 +211,11 @@ body{
 
 .welcomeBtn{
 	display: block;
+	width: 100%;
+}
+
+.bottomWelcomeBtn{
+	margin-top: 20px;
 }
 
 .joinBtnContainer{
@@ -220,11 +225,9 @@ body{
 	bottom: 10%;
 	z-index: 2;
 	text-align: center;
-	border: 5px solid black;
 }
 
 .btnBackground{
-	border: 5px solid green;
 	display: inline-block;
 }
 
