@@ -1,7 +1,7 @@
 # Garrio: A Social Network
 
-I was playing around with node.js and I decided to make a social network based off of twitter.
-
+I was playing around with Node.JS and I decided to make a social network based off of twitter.
+I used handlebarsjs to do templating, mongodb as a database, and Node.JS as the backend.
 ![alt text](example_pics/screenshot4.png)
 
 This project comes with login and registration capabilities stored through mongoose online db.
