@@ -22,7 +22,7 @@ Users can see what is going on with their friends through the timeline feature.
 
 To run the project, go to the main directory and run the command below.
 ```
-node server.js
+node app.js
 ```
 Then go to [localhost:4000](http://localhost:4000) to view the project.
 
