@@ -11,6 +11,10 @@ var LocalStrategy = require('passport-local').Strategy;
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
 
+// Init App
+var app = express();
+var http = require('http').Server(app);
+
 //Development Setting
 //mongoose.connect('mongodb://localhost/socialNetwork');
 
@@ -29,9 +33,6 @@ var db = mongoose.connection;
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-
-// Init App
-var app = express();
 
 // View Engine
 app.set('views', path.join(__dirname, 'views'));
@@ -121,6 +122,8 @@ var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 //If you want to load on localhost onto a different port, change 4000 to whatever port you please
 var port = process.env.OPENSHIFT_NODEJS_PORT || 4000;
 
-app.listen(port, ipaddress, function(){
-	console.log('Running on Openshift Server')
+http.listen(port, ipaddress, function(){
+	console.log('Server started');
+	console.log('IP_ADDRESS: ' + ipaddress);
+	console.log('PORT: ' + port)
 })
