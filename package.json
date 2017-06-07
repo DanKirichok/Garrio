@@ -18,6 +18,7 @@
     "express-messages": "*",
     "express-session": "*",
     "express-validator": "*",
+    "http": "0.0.0",
     "mongodb": "*",
     "mongoose": "*",
     "passport": "*",
