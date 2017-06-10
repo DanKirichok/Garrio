@@ -28,5 +28,5 @@ Then go to [localhost:4000](http://localhost:4000) to view the project.
 
 <br>
 
-The default port it is run at is 4000, but you can change it in the server.js file.
+The default port it is run at is 4000, but you can change it in the app.js file.
 
